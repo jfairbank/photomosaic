@@ -1,7 +1,18 @@
 import React, { PropTypes } from 'react';
+import { Row, Col } from 'react-bootstrap';
 import { ButtonToolbar, Button } from 'react-bootstrap';
 import ReactCrop from 'react-image-crop';
 import { ImagePropType, ImageCropPropType } from '../propTypes';
+
+function startedCrop(crop) {
+  return (
+    crop
+    && crop.hasOwnProperty('x')
+    && crop.hasOwnProperty('y')
+    && crop.hasOwnProperty('width')
+    && crop.hasOwnProperty('height')
+  );
+}
 
 export default function MainImageCropper({
   mainImage,
@@ -11,24 +22,28 @@ export default function MainImageCropper({
 }) {
   return (
     <div>
-      <h1>Crop your main image to a square</h1>
+      <Row>
+        <Col xs="8">
+          <ReactCrop
+            src={mainImage.url}
+            crop={mainImageCrop}
+            onComplete={onUpdateCrop}
+          />
 
-      <ButtonToolbar>
-        <Button
-          bsStyle="primary"
-          bsSize="large"
-          disabled={!mainImageCrop}
-          onClick={onFinalizeCrop}
-        >
-          Done
-        </Button>
-      </ButtonToolbar>
+          <h3>Crop your main image to a square</h3>
 
-      <ReactCrop
-        src={mainImage.url}
-        crop={mainImageCrop}
-        onComplete={onUpdateCrop}
-      />
+          <ButtonToolbar>
+            <Button
+              bsStyle="primary"
+              bsSize="large"
+              disabled={!startedCrop(mainImageCrop)}
+              onClick={onFinalizeCrop}
+            >
+              Done
+            </Button>
+          </ButtonToolbar>
+        </Col>
+      </Row>
     </div>
   );
 }

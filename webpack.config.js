@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
   entry: {
     app: './src/app/main.js',
-    mainImageUploader: './src/workers/mainImageUploader.js',
+    decodeImage: './src/workers/decodeImage.js',
+    resizeImage: './src/workers/resizeImage.js',
   },
 
   output: {
@@ -11,17 +12,26 @@ module.exports = {
     filename: '[name].bundle.js',
   },
 
+  node: {
+    fs: 'empty',
+  },
+
   module: {
     loaders: [
       {
-        test: /.*\.js$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel',
       },
 
       {
-        test: /\.*\.css$/,
+        test: /\.css$/,
         loader: 'style!css',
+      },
+
+      {
+        test: /\.json$/,
+        loader: 'json',
       },
     ],
   },

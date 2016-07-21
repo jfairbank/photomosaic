@@ -7,7 +7,13 @@ export function getWorker(name) {
 }
 
 export default function startWorkers() {
-  const mainImageUploader = getWorker('mainImageUploader');
+  return {
+    decodeImage: [
+      getWorker('decodeImage'),
+    ],
 
-  return { mainImageUploader };
+    resizeImage: [
+      getWorker('resizeImage'),
+    ],
+  };
 }

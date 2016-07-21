@@ -1,18 +1,19 @@
 import React, { PropTypes } from 'react';
-import { ImagePropType } from '../propTypes';
 import * as fsm from '../fsm';
 import SelectMainImage from '../containers/SelectMainImage';
 import MainImageCropper from '../containers/MainImageCropper';
 import SelectTiles from '../containers/SelectTiles';
+import Photomosaic from '../containers/Photomosaic';
 
-export default function Flow({
-  mainImage,
-  tiles,
-  fsmState,
-}) {
+export default function Flow({ fsmState }) {
   switch (fsmState) {
     case fsm.SELECT_MAIN_IMAGE:
       return <SelectMainImage />;
+
+    case fsm.UPLOADING_MAIN_IMAGE:
+      return (
+        <h3>Uploading Main Image...</h3>
+      );
 
     case fsm.CROP_MAIN_IMAGE:
       return <MainImageCropper />;
@@ -21,26 +22,10 @@ export default function Flow({
       return <SelectTiles />;
 
     default:
-      return (
-        <div>
-          <img role="presentation" width="200" src={mainImage.url} />
-          <br />
-          {tiles.map((tile, i) => (
-            <img
-              key={i}
-              role="presentation"
-              height="50"
-              width="50"
-              src={tile.url}
-            />
-          ))}
-        </div>
-      );
+      return <Photomosaic />;
   }
 }
 
 Flow.propTypes = {
-  mainImage: ImagePropType,
-  tiles: PropTypes.arrayOf(ImagePropType),
   fsmState: PropTypes.number.isRequired,
 };

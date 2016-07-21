@@ -1,6 +1,7 @@
 import * as fsm from './fsm';
 
 import {
+  UPLOAD_MAIN_IMAGE,
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
   FINALIZE_MAIN_IMAGE_CROP,
@@ -16,6 +17,12 @@ const INITIAL_STATE = {
 
 export default function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case UPLOAD_MAIN_IMAGE:
+      return {
+        ...state,
+        fsmState: fsm.UPLOADING_MAIN_IMAGE,
+      };
+
     case SELECT_MAIN_IMAGE:
       return {
         ...state,
