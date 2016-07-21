@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Row, Col } from 'react-bootstrap';
-import { ButtonToolbar, Button } from 'react-bootstrap';
+import { ButtonToolbar, Button, Row, Col } from 'react-bootstrap';
 import ReactCrop from 'react-image-crop';
 import { ImagePropType, ImageCropPropType } from '../propTypes';
 
@@ -23,7 +22,7 @@ export default function MainImageCropper({
   return (
     <div>
       <Row>
-        <Col xs="8">
+        <Col xs={8}>
           <ReactCrop
             src={mainImage.url}
             crop={mainImageCrop}

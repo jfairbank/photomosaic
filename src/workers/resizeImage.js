@@ -5,6 +5,7 @@ self.onmessage = function (event) {
 	switch (event.data[0]) {
 		case "setup":
 			resizeWorker = new Resize(event.data[1], event.data[2], event.data[3], event.data[4], event.data[5], event.data[6]);
+      self.postMessage({ ready: true });
 			break;
 		case "resize":
 			resizeWorker.resize(event.data[1]);

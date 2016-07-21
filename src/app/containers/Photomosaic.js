@@ -1,13 +1,13 @@
 import { connect } from 'react-redux';
-import { getPhotoMosaicData } from '../selectors';
-import CanvasImage from '../components/CanvasImage';
+import { getPhotomosaic } from '../selectors';
+import Photomosaic from '../components/Photomosaic';
 
 export function mapStateToProps(state) {
   return {
-    imageData: getPhotoMosaicData(state),
+    url: getPhotomosaic(state).url,
   };
 }
 
 export default connect(
   mapStateToProps
-)(CanvasImage);
+)(Photomosaic);

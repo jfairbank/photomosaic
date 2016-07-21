@@ -3,9 +3,9 @@ import {
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
   FINALIZE_MAIN_IMAGE_CROP,
-  // APPLY_MAIN_IMAGE_CROP,
   UPLOAD_TILES,
   SELECT_TILES,
+  SET_PHOTOMOSAIC,
 } from './actionTypes';
 
 export const uploadMainImage = file => ({ type: UPLOAD_MAIN_IMAGE, payload: file });
@@ -15,3 +15,8 @@ export const finalizeMainImageCrop = () => ({ type: FINALIZE_MAIN_IMAGE_CROP });
 // export const applyMainImageCrop = image => ({ type: APPLY_MAIN_IMAGE_CROP, payload: image });
 export const uploadTiles = files => ({ type: UPLOAD_TILES, payload: files });
 export const selectTiles = urls => ({ type: SELECT_TILES, payload: urls });
+
+export const setPhotomosaic = (photomosaic) => ({
+  type: SET_PHOTOMOSAIC,
+  payload: photomosaic,
+});

@@ -1,12 +1,12 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { getMainImageCrop } from '../selectors';
+import { getMainImageForCropping, getMainImageCrop } from '../selectors';
 import MainImageCropper from '../components/MainImageCropper';
 import { setMainImageCrop, finalizeMainImageCrop } from '../actions';
 
 export function mapStateToProps(state) {
   return {
-    mainImage: state.mainImage,
+    mainImage: getMainImageForCropping(state),
     mainImageCrop: getMainImageCrop(state),
   };
 }
