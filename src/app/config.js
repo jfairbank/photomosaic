@@ -1,1 +1,4 @@
-export const IMAGE_TILE_FACTOR = 20;
+export const TILE_COMPARISON_SIZE = 10;
+export const TILE_SIZE = 20;
+export const MAIN_IMAGE_MAX_SIZE_CROPPING = 1000;
+export const MAIN_IMAGE_MAX_SIZE = 2500;

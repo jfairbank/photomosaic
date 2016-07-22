@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jfairbank/photomosaic#readme",
   "dependencies": {
     "babel-runtime": "^6.9.2",
+    "classnames": "^2.2.5",
     "cwise": "^1.0.9",
     "inkjet": "^2.0.2",
     "lodash": "^4.13.1",
@@ -74,7 +75,8 @@
     ],
     "settings": {
       "import/ignore": [
-        "node_modules"
+        "node_modules",
+        "\\.css$"
       ],
       "import/resolver": "webpack"
     },

@@ -1,20 +1,22 @@
 import * as fsm from './fsm';
 
 import {
-  UPLOAD_MAIN_IMAGE,
-  UPLOAD_TILES,
+  ADD_TILES,
+  CONFIRM_MAIN_IMAGE_CROP,
+  CONFIRM_TILES,
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
-  FINALIZE_MAIN_IMAGE_CROP,
-  SELECT_TILES,
   SET_PHOTOMOSAIC,
+  UPLOAD_MAIN_IMAGE,
+  UPLOAD_TILES,
 } from './actionTypes';
 
 const INITIAL_STATE = {
-  mainImage: null,
   mainImageForCropping: null,
   mainImageCrop: null,
+  mainImageForProcessing: null,
   tiles: [],
+  uploadingTiles: false,
   fsmState: fsm.SELECT_MAIN_IMAGE,
 };
 
@@ -27,11 +29,11 @@ export default function reducer(state = INITIAL_STATE, action) {
       };
 
     case SELECT_MAIN_IMAGE: {
-      const { mainImage, mainImageForCropping } = action.payload;
+      const { mainImageForProcessing, mainImageForCropping } = action.payload;
 
       return {
         ...state,
-        mainImage,
+        mainImageForProcessing,
         mainImageForCropping,
         fsmState: fsm.CROP_MAIN_IMAGE,
       };
@@ -43,22 +45,29 @@ export default function reducer(state = INITIAL_STATE, action) {
         mainImageCrop: action.payload,
       };
 
-    case FINALIZE_MAIN_IMAGE_CROP:
+    case CONFIRM_MAIN_IMAGE_CROP:
       return {
         ...state,
+        mainImageForCropping: null,
         fsmState: fsm.SELECT_TILES,
       };
 
     case UPLOAD_TILES:
       return {
         ...state,
-        fsmState: fsm.UPLOADING_TILES,
+        uploadingTiles: true,
       };
 
-    case SELECT_TILES:
+    case ADD_TILES:
       return {
         ...state,
-        tiles: action.payload,
+        tiles: state.tiles.concat(action.payload),
+        uploadingTiles: false,
+      };
+
+    case CONFIRM_TILES:
+      return {
+        ...state,
         fsmState: fsm.CREATING_PHOTOMOSAIC,
       };
 
@@ -66,6 +75,8 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         photomosaic: action.payload,
+        mainImageForProcessing: null,
+        tiles: [],
         fsmState: fsm.DONE,
       };
 

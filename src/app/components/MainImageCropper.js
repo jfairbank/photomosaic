@@ -17,7 +17,7 @@ export default function MainImageCropper({
   mainImage,
   mainImageCrop,
   onUpdateCrop,
-  onFinalizeCrop,
+  onConfirmCrop,
 }) {
   return (
     <div>
@@ -36,7 +36,7 @@ export default function MainImageCropper({
               bsStyle="primary"
               bsSize="large"
               disabled={!startedCrop(mainImageCrop)}
-              onClick={onFinalizeCrop}
+              onClick={onConfirmCrop}
             >
               Done
             </Button>
@@ -51,5 +51,5 @@ MainImageCropper.propTypes = {
   mainImage: ImagePropType,
   mainImageCrop: ImageCropPropType,
   onUpdateCrop: PropTypes.func.isRequired,
-  onFinalizeCrop: PropTypes.func.isRequired,
+  onConfirmCrop: PropTypes.func.isRequired,
 };

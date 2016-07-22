@@ -1,17 +1,24 @@
 /* eslint-disable object-shorthand,no-param-reassign */
-// import flow from 'lodash/flow';
 import compact from 'lodash/compact';
 import { takeEvery } from 'redux-saga';
 import { call, put, select } from 'redux-saga/effects';
 import nj from 'numjs';
-import { IMAGE_TILE_FACTOR } from './config';
 import * as actions from './actions';
-import { getMainImage, getMainImageCrop } from './selectors';
+import { getMainImageForProcessing, getMainImageCrop, getTiles } from './selectors';
+import { boundAtSmallerDimension } from '../lib/utils';
+import { getImageArray } from '../lib/image';
+
+import {
+  // TILE_COMPARISON_SIZE,
+  TILE_SIZE,
+  MAIN_IMAGE_MAX_SIZE_CROPPING,
+  MAIN_IMAGE_MAX_SIZE,
+} from './config';
 
 import {
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
-  SELECT_TILES,
+  CONFIRM_TILES,
 } from './actionTypes';
 
 function controller(map) {
@@ -35,70 +42,33 @@ function readFile(file) {
 }
 
 function* resize(workers, { data, width, height, newWidth, newHeight }) {
-  const messages = [
-    ['setup', width, height, newWidth, newHeight, 4, false],
-    ['resize', data],
-  ];
-
-  const resizedData = yield call(
-    workers.runTasksSequentially,
-    'resizeImage',
-    messages
-  );
+  const message = [width, height, newWidth, newHeight, 4, false, data];
+  const resizedData = yield call(workers.runTask, 'resizeImage', message);
 
   return resizedData;
 }
 
-function getBoundedDimensions({ width, height, maxWidth, maxHeight }) {
-  if (height > width && height > maxHeight) {
-    return {
-      width: (maxHeight * (width / height)) | 0,
-      height: maxHeight,
-    };
-  }
+// function* resizeTile(workers, imageInfo) {
+//   const { width, height } = imageInfo;
 
-  if (width > height && width > maxWidth) {
-    return {
-      width: maxWidth,
-      height: (maxWidth * (height / width)) | 0,
-    };
-  }
+//   const data = yield call(resize, workers, {
+//     width,
+//     height,
+//     newWidth: TILE_COMPARISON_SIZE,
+//     newHeight: TILE_COMPARISON_SIZE,
+//     data: imageInfo.data,
+//   });
 
-  if (height > maxHeight && width > maxWidth) {
-    return {
-      width: maxWidth,
-      height: maxHeight,
-    };
-  }
-
-  return { width, height };
-}
-
-function* resizeTile(workers, imageInfo) {
-  const { width, height } = imageInfo;
-
-  const data = yield call(resize, workers, {
-    width,
-    height,
-    newWidth: IMAGE_TILE_FACTOR,
-    newHeight: IMAGE_TILE_FACTOR,
-    data: imageInfo.data,
-  });
-
-  return {
-    data,
-    width: IMAGE_TILE_FACTOR,
-    height: IMAGE_TILE_FACTOR,
-  };
-}
+//   return {
+//     data,
+//     width: TILE_COMPARISON_SIZE,
+//     height: TILE_COMPARISON_SIZE,
+//   };
+// }
 
 function* getUrlForImageBuffer(workers, buffer, width, height) {
-  const messages = [
-    ['setup', width, height, 100],
-    ['toDataURL', buffer],
-  ];
-
-  const response = yield call(workers.runTasksSequentially, 'dataURL', messages);
+  const message = [width, height, 100, buffer];
+  const response = yield call(workers.runTask, 'dataURL', message);
 
   if (response.error) {
     throw new Error(response.error);
@@ -107,123 +77,63 @@ function* getUrlForImageBuffer(workers, buffer, width, height) {
   return response.data;
 }
 
+function processMainImageWorker(workers, buffer, maxSize) {
+  return call(
+    workers.runTask,
+    'processMainImage',
+    [maxSize, buffer]
+  );
+}
+
 const createProcessMainImage = (workers) => function* processMainImage(action) {
   const [file] = action.payload;
   const buffer = yield call(readFile, file);
 
-  const imageInfo = yield call(
-    workers.runTask,
-    'decodeImage',
-    buffer
-  );
+  const [mainImageForCropping, mainImageForProcessing] = yield [
+    processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE_CROPPING),
+    processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE),
+  ];
 
-  const boundedDimensions = getBoundedDimensions({
-    width: imageInfo.width,
-    height: imageInfo.height,
-    maxWidth: 1000,
-    maxHeight: 1000,
-  });
-
-  const resizedData = yield call(resize, workers, {
-    data: imageInfo.data,
-    width: imageInfo.width,
-    height: imageInfo.height,
-    newWidth: boundedDimensions.width,
-    newHeight: boundedDimensions.height,
-  });
-
-  const imageArray = nj
-    .uint8(imageInfo.data)
-    .reshape(imageInfo.height, imageInfo.width, 4);
-
-  const resizedImageArray = nj
-    .uint8(resizedData)
-    .reshape(boundedDimensions.height, boundedDimensions.width, 4);
-
-  const url = yield call(
-    getUrlForImageBuffer,
-    workers,
-    resizedData,
-    boundedDimensions.width,
-    boundedDimensions.height
-  );
-
-  const mainImageForCropping = {
-    url,
-    data: resizedImageArray,
-  };
+  yield call(workers.terminatePool, 'processMainImage');
 
   yield put(actions.selectMainImage({
     mainImageForCropping,
-    mainImage: imageArray,
+    mainImageForProcessing,
   }));
 };
+
+function* processTile(workers, buffer) {
+  const response = yield call(
+    workers.runTask,
+    'processTile',
+    [TILE_SIZE, buffer]
+  );
+
+  if (response.error) {
+    return null;
+  }
+
+  return response.data;
+}
 
 const createProcessTiles = (workers) => function* processTiles(action) {
   const files = action.payload;
   const buffers = yield files.map(file => call(readFile, file));
 
-  const imageInfos = yield compact(buffers).map(buffer => (
-    call(workers.runTask, 'decodeImage', buffer)
-  ));
+  let tiles = yield buffers.map(buffer => call(processTile, workers, buffer));
+  tiles = compact(tiles);
 
-  const resizeResults = yield compact(imageInfos).map(imageInfo => (
-    call(resizeTile, workers, imageInfo)
-  ));
-
-  // const urls = yield compact(resizeResults).map(resizeResult => (
-  //   call(
-  //     getUrlForImageBuffer,
-  //     workers,
-  //     resizeResult.data,
-  //     resizeResult.width,
-  //     resizeResult.height
-  //   )
-  // ));
-
-  // const tiles = compact(urls).map((url, i) => {
-  const tiles = compact(resizeResults).map(resizeResult => {
-    // const resizeResult = resizeResults[i];
-
-    const resizedImageArray = nj
-      .uint8(resizeResult.data)
-      .reshape(resizeResult.height, resizeResult.width, 4);
-
-    return {
-      // url,
-      data: resizedImageArray,
-    };
-  });
-
-  yield put(actions.selectTiles(tiles));
-
-  // let tiles = yield files.map(file => call(processTile, file));
-  // tiles = tiles.filter(({ shape: [,,channels] }) => channels === 3)
-  // yield put(actions.selectTiles(tiles));
-
-  // const tilesArray = nj.zeros([
-  //   tiles.length,
-  //   IMAGE_TILE_FACTOR,
-  //   IMAGE_TILE_FACTOR,
-  //   3,
-  // ]);
-
-  // for (let i = 0, l = tiles.length; i < l; i++) {
-  //   tilesArray
-  //     .slice([i, i + 1])
-  //     .assign([tiles[i].tolist()], false);
-  // }
-
-  // yield put(actions.selectTiles(tilesArray));
+  yield put(actions.addTiles(tiles));
 };
 
-function* computePhotomosaicDiff(workers, mainImage, tile) {
+function* computePhotomosaicDiff(workers, mainImage, tileBuffer) {
   const message = [
     mainImage.shape[1],
     mainImage.shape[0],
-    IMAGE_TILE_FACTOR,
+    // TILE_COMPARISON_SIZE,
+    TILE_SIZE,
     mainImage.selection.data,
-    tile.selection.data,
+    tileBuffer,
   ];
 
   const diff = yield call(
@@ -236,20 +146,11 @@ function* computePhotomosaicDiff(workers, mainImage, tile) {
 }
 
 function cropMainImageToSquare(mainImage, crop) {
-  // console.group('cropMainImageToSquare');
-  // console.log('mainImage.shape', mainImage.shape);
-  // console.log('crop', crop);
   const x = ((crop.x / 100) * mainImage.shape[1]) | 0;
   const y = ((crop.y / 100) * mainImage.shape[0]) | 0;
 
-  // console.log('x', x);
-  // console.log('y', y);
-
   let width = ((crop.width / 100) * mainImage.shape[1]) | 0;
   let height = ((crop.height / 100) * mainImage.shape[0]) | 0;
-
-  // console.log('width before', width);
-  // console.log('height before', height);
 
   // Make square
   if (width > height) {
@@ -257,11 +158,6 @@ function cropMainImageToSquare(mainImage, crop) {
   } else if (height > width) {
     height = width;
   }
-
-  // const [x, y, width, height] = [14, 0, 733, 733];
-  // console.log('width after', width);
-  // console.log('height after', height);
-  // console.log('slice', [y, y + height], [x, x + width]);
 
   const croppedArray = mainImage
     .slice([y, y + height], [x, x + width])
@@ -272,10 +168,6 @@ function cropMainImageToSquare(mainImage, crop) {
     .uint8(croppedArray)
     .reshape(height, width, 4);
 
-  // console.log('croppedMainImage.shape', croppedMainImage.shape);
-  // console.log('same?', croppedMainImage.selection.data === mainImage.selection.data);
-  // console.groupEnd();
-
   return croppedMainImage;
 }
 
@@ -285,15 +177,18 @@ function* cropAndResizeMainImageToSquare(
 ) {
   const croppedMainImage = yield call(cropMainImageToSquare, mainImage, crop);
 
-  const { width, height } = yield call(getBoundedDimensions, {
+  const { width, height } = yield call(boundAtSmallerDimension, {
     maxWidth,
     maxHeight,
     width: croppedMainImage.shape[1],
     height: croppedMainImage.shape[0],
   });
 
-  const finalWidth = width - (width % IMAGE_TILE_FACTOR);
-  const finalHeight = height - (height % IMAGE_TILE_FACTOR);
+  // const finalWidth = width - (width % TILE_COMPARISON_SIZE);
+  // const finalHeight = height - (height % TILE_COMPARISON_SIZE);
+
+  const finalWidth = width - (width % TILE_SIZE);
+  const finalHeight = height - (height % TILE_SIZE);
 
   const resizedData = yield call(resize, workers, {
     data: croppedMainImage.selection.data,
@@ -314,9 +209,11 @@ function* computePhotomosaic(workers, mainImage, tiles, diffs) {
   const message = [
     mainImage.shape[1],
     mainImage.shape[0],
-    IMAGE_TILE_FACTOR,
+    // TILE_COMPARISON_SIZE,
+    TILE_SIZE,
     mainImage.selection.data,
-    tiles.map(tile => tile.data.selection.data),
+    // tiles.map(tile => tile.data.selection.data),
+    tiles.map(tile => tile.buffer),
     diffs,
   ];
 
@@ -333,63 +230,35 @@ function* computePhotomosaic(workers, mainImage, tiles, diffs) {
   return photomosaic;
 }
 
-const createGeneratePhotomosaic = (workers) => function* generatePhotomosaic(action) {
-  const tiles = action.payload;
-
-  const [mainImage, mainImageCrop] = yield [
-    select(getMainImage),
+function* generatePhotomosaic(workers) {
+  const [tiles, mainImageForProcessing, mainImageCrop] = yield [
+    select(getTiles),
+    select(getMainImageForProcessing),
     select(getMainImageCrop),
   ];
+
+  const mainImage = yield call(
+    getImageArray,
+    mainImageForProcessing.buffer,
+    mainImageForProcessing.width,
+    mainImageForProcessing.height
+  );
 
   const finalMainImage = yield call(cropAndResizeMainImageToSquare, workers, {
     mainImage,
     crop: mainImageCrop,
-    maxWidth: 2000,
-    maxHeight: 2000,
+    maxWidth: MAIN_IMAGE_MAX_SIZE,
+    maxHeight: MAIN_IMAGE_MAX_SIZE,
   });
 
-  // console.log('before mainImageInfo');
-  // const mainImageInfo = {
-  //   data: mainImage.selection.data,
-  //   width: mainImage.shape[1],
-  //   height: mainImage.shape[0],
-  // };
-  // console.log('after mainImageInfo');
-
-  // console.log('before resizeResult');
-  // const resizeResult = yield call(
-  //   resizeMainImageToSquare,
-  //   workers,
-  //   mainImageInfo,
-  //   2000,
-  //   2000
-  // );
-  // console.log('after resizeResult', resizeResult);
-
-  // console.log('before croppedResizedMainImage 1');
-  // let croppedResizedMainImage = nj
-  //   .uint8(resizeResult.data)
-  //   .reshape(resizeResult.height, resizeResult.width, 4);
-  // console.log('after croppedResizedMainImage 1');
-
-  // console.log('before croppedResizedMainImage 2');
-  // croppedResizedMainImage = yield call(
-  //   cropMainImageToSquare,
-  //   croppedResizedMainImage,
-  //   mainImageCrop
-  // );
-  // console.log('after croppedResizedMainImage 2', croppedResizedMainImage);
-
-  // console.log('before diffs');
   const diffs = yield tiles.map(tile => (
     call(
       computePhotomosaicDiff,
       workers,
       finalMainImage,
-      tile.data
+      tile.buffer
     )
   ));
-  // window.diffs = diffs;
 
   const photomosaic = yield call(
     computePhotomosaic,
@@ -405,22 +274,25 @@ const createGeneratePhotomosaic = (workers) => function* generatePhotomosaic(act
     photomosaic.selection.data,
     photomosaic.shape[1],
     photomosaic.shape[0]
-    // finalMainImage.selection.data,
-    // finalMainImage.shape[1],
-    // finalMainImage.shape[0]
   );
 
   yield put(actions.setPhotomosaic({
     url,
     data: finalMainImage,
   }));
+}
+
+const createAfterConfirmTiles = (workers) => function* afterConfirmTiles(action) {
+  yield [
+    call(workers.terminatePool, 'processTile'),
+    call(generatePhotomosaic, workers, action),
+  ];
 };
 
 export default function* mainSaga(workers) {
   yield* controller({
     [UPLOAD_MAIN_IMAGE]: createProcessMainImage(workers),
     [UPLOAD_TILES]: createProcessTiles(workers),
-    [SELECT_TILES]: createGeneratePhotomosaic(workers),
-    // [FINALIZE_MAIN_IMAGE_CROP]: applyMainImageCrop,
+    [CONFIRM_TILES]: createAfterConfirmTiles(workers),
   });
 }

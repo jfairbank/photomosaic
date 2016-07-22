@@ -11,6 +11,8 @@ module.exports = {
     dataURL: './src/workers/dataURL.js',
     computePhotomosaicDiff: './src/workers/computePhotomosaicDiff.js',
     computePhotomosaic: './src/workers/computePhotomosaic.js',
+    processTile: './src/workers/processTile',
+    processMainImage: './src/workers/processMainImage',
   },
 
   output: {

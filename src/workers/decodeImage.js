@@ -1,7 +1,7 @@
-import inkjet from 'inkjet';
+import { decode } from '../lib/image';
 
 self.onmessage = ({ data }) => {
-  inkjet.decode(data, (err, decoded) => {
-    self.postMessage(decoded);
-  });
+  decode(data)
+    .then(decoded => self.postMessage({ data: decoded }))
+    .catch(err => self.postMessage({ error: err.message }));
 };

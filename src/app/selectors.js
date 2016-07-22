@@ -1,5 +1,5 @@
-export function getMainImage(state) {
-  return state.mainImage;
+export function getMainImageForProcessing(state) {
+  return state.mainImageForProcessing;
 }
 
 export function getMainImageForCropping(state) {
@@ -8,6 +8,10 @@ export function getMainImageForCropping(state) {
 
 export function getTiles(state) {
   return state.tiles;
+}
+
+export function isUploadingTiles(state) {
+  return state.uploadingTiles;
 }
 
 export function getMainImageCrop(state) {

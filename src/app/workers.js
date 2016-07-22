@@ -19,9 +19,11 @@ export function createWorkerPool(name, n) {
 
 export default function startWorkers() {
   const workers = {
-    decodeImage: createWorkerPool('decodeImage', 4),
+    // decodeImage: createWorkerPool('decodeImage', 4),
     resizeImage: createWorkerPool('resizeImage', 4),
     dataURL: createWorkerPool('dataURL', 4),
+    processTile: createWorkerPool('processTile', 4),
+    processMainImage: createWorkerPool('processMainImage', 2),
     computePhotomosaicDiff: createWorkerPool('computePhotomosaicDiff', 4),
     computePhotomosaic: createWorkerPool('computePhotomosaic', 1),
   };
@@ -41,7 +43,20 @@ export default function startWorkers() {
     });
   });
 
+  function assertWorkers(name) {
+    if (!workers[name]) {
+      throw new Error(`No workers for ${name}.`);
+    }
+  }
+
+  function getWorkers(name) {
+    assertWorkers(name);
+    return workers[name];
+  }
+
   function getWorker(name) {
+    assertWorkers(name);
+
     const numWorkers = workers[name].length;
     const pointer = pointers[name];
 
@@ -50,31 +65,45 @@ export default function startWorkers() {
     return workers[name][pointer];
   }
 
-  function runTasksSequentially(name, messages) {
+  function runTask(name, message) {
     const worker = getWorker(name);
     const promise = promiseMap.get(worker);
 
-    const newPromise = messages.reduce((memo, message) => (
-      memo.then(() => new Promise(resolve => {
-        const cb = (e) => {
-          worker.removeEventListener('message', cb);
-          resolve(e.data);
-        };
+    const newPromise = promise.then(() => new Promise(resolve => {
+      const cb = (e) => {
+        worker.removeEventListener('message', cb);
+        resolve(e.data);
+      };
 
-        worker.addEventListener('message', cb);
+      worker.addEventListener('message', cb);
 
-        worker.postMessage(message);
-      }))
-    ), promise);
+      worker.postMessage(message);
+    }));
 
     promiseMap.set(worker, newPromise);
 
     return newPromise;
   }
 
-  function runTask(name, message) {
-    return runTasksSequentially(name, [message]);
+  function terminatePool(name) {
+    setImmediate(() => {
+      const workersByType = getWorkers(name);
+
+      workersByType.forEach(worker => {
+        // Delete promise
+        promiseMap.delete(worker);
+
+        // Terminate worker
+        worker.terminate();
+      });
+
+      // Remove pointer
+      pointers[name] = null;
+
+      // Remove pool
+      workers[name] = null;
+    });
   }
 
-  return { getWorker, runTask, runTasksSequentially };
+  return { getWorker, runTask, terminatePool };
 }

@@ -21,11 +21,6 @@ export default function Flow({ fsmState }) {
     case fsm.SELECT_TILES:
       return <SelectTiles />;
 
-    case fsm.UPLOADING_TILES:
-      return (
-        <h3>Uploading Tiles...</h3>
-      );
-
     case fsm.CREATING_PHOTOMOSAIC:
       return (
         <h3>Generating Photomosaic...</h3>

@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getMainImageForCropping, getMainImageCrop } from '../selectors';
 import MainImageCropper from '../components/MainImageCropper';
-import { setMainImageCrop, finalizeMainImageCrop } from '../actions';
+import { setMainImageCrop, confirmMainImageCrop } from '../actions';
 
 export function mapStateToProps(state) {
   return {
@@ -14,7 +14,7 @@ export function mapStateToProps(state) {
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     onUpdateCrop: setMainImageCrop,
-    onFinalizeCrop: finalizeMainImageCrop,
+    onConfirmCrop: confirmMainImageCrop,
   }, dispatch);
 }
 
