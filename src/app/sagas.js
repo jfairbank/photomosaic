@@ -2,11 +2,8 @@
 import compact from 'lodash/compact';
 import { takeEvery } from 'redux-saga';
 import { call, put, select } from 'redux-saga/effects';
-import nj from 'numjs';
 import download from 'downloadjs';
-import * as actions from './actions';
-import { boundAtSmallerDimension } from '../lib/utils';
-import { getImageArray } from '../lib/image';
+import * as actions from 'actions';
 
 import {
   getMainImageForProcessing,
@@ -49,24 +46,6 @@ function readFile(file) {
   });
 }
 
-function* resize(workers, { data, width, height, newWidth, newHeight }) {
-  const message = [width, height, newWidth, newHeight, 4, false, data];
-  const resizedData = yield call(workers.runTask, 'resizeImage', message);
-
-  return resizedData;
-}
-
-// function* getUrlForImageBuffer(workers, buffer, width, height) {
-//   const message = [width, height, 100, buffer];
-//   const response = yield call(workers.runTask, 'dataURL', message);
-
-//   if (response.error) {
-//     throw new Error(response.error);
-//   }
-
-//   return response.data;
-// }
-
 function processMainImageWorker(workers, buffer, maxSize) {
   return call(
     workers.runTask,
@@ -108,10 +87,7 @@ const createProcessMainImage = (workers) => function* processMainImage(action) {
     processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE),
   ];
 
-  const [mainImageCrop] = yield [
-    call(computeInitialCrop, mainImageForCropping),
-    // call(workers.terminatePool, 'processMainImage'),
-  ];
+  const mainImageCrop = yield call(computeInitialCrop, mainImageForCropping);
 
   yield put(actions.selectMainImage({
     mainImageForProcessing,
@@ -154,11 +130,11 @@ const createProcessTiles = (workers) => function* processTiles(action) {
 
 function* computePhotomosaicDiff(workers, mainImage, tileBuffer) {
   const message = [
-    mainImage.shape[1],
-    mainImage.shape[0],
+    mainImage.width,
+    mainImage.height,
     TILE_COMPARISON_SIZE,
     TILE_SIZE,
-    mainImage.selection.data,
+    mainImage.buffer,
     tileBuffer,
   ];
 
@@ -171,70 +147,12 @@ function* computePhotomosaicDiff(workers, mainImage, tileBuffer) {
   return diff;
 }
 
-function cropMainImageToSquare(mainImage, crop) {
-  const x = ((crop.x / 100) * mainImage.shape[1]) | 0;
-  const y = ((crop.y / 100) * mainImage.shape[0]) | 0;
-
-  let width = ((crop.width / 100) * mainImage.shape[1]) | 0;
-  let height = ((crop.height / 100) * mainImage.shape[0]) | 0;
-
-  // Make square
-  if (width > height) {
-    width = height;
-  } else if (height > width) {
-    height = width;
-  }
-
-  const croppedArray = mainImage
-    .slice([y, y + height], [x, x + width])
-    .flatten()
-    .tolist();
-
-  const croppedMainImage = nj
-    .uint8(croppedArray)
-    .reshape(height, width, 4);
-
-  return croppedMainImage;
-}
-
-function* cropAndResizeMainImageToSquare(
-  workers,
-  { mainImage, crop, maxWidth, maxHeight }
-) {
-  const croppedMainImage = yield call(cropMainImageToSquare, mainImage, crop);
-
-  const { width, height } = yield call(boundAtSmallerDimension, {
-    maxWidth,
-    maxHeight,
-    width: croppedMainImage.shape[1],
-    height: croppedMainImage.shape[0],
-  });
-
-  const finalWidth = width - (width % TILE_COMPARISON_SIZE);
-  const finalHeight = height - (height % TILE_COMPARISON_SIZE);
-
-  const resizedData = yield call(resize, workers, {
-    data: croppedMainImage.selection.data,
-    width: croppedMainImage.shape[1],
-    height: croppedMainImage.shape[0],
-    newWidth: finalWidth,
-    newHeight: finalHeight,
-  });
-
-  const newImage = nj
-    .uint8(resizedData)
-    .reshape(finalHeight, finalWidth, 4);
-
-  return newImage;
-}
-
 function* computePhotomosaic(workers, mainImage, tiles, diffs) {
   const message = [
-    mainImage.shape[1],
-    mainImage.shape[0],
+    mainImage.width,
+    mainImage.height,
     TILE_COMPARISON_SIZE,
     TILE_SIZE,
-    // mainImage.selection.data,
     tiles.map(tile => tile.buffer),
     diffs,
   ];
@@ -248,32 +166,47 @@ function* computePhotomosaic(workers, mainImage, tiles, diffs) {
   return photomosaic;
 }
 
-function* generatePhotomosaic(workers) {
+function* getMainImageForPhotomosaic(
+  workers,
+  { mainImage, tileComparisonDimension, maxSize, crop }
+) {
+  const message = [
+    mainImage.width,
+    mainImage.height,
+    tileComparisonDimension,
+    maxSize,
+    crop,
+    mainImage.buffer,
+  ];
+
+  const newMainImage = yield call(
+    workers.runTask,
+    'getMainImageForPhotomosaic',
+    message
+  );
+
+  return newMainImage;
+}
+
+const createGeneratePhotomosaic = (workers) => function* generatePhotomosaic() {
   const [tiles, mainImageForProcessing, mainImageCrop] = yield [
     select(getTiles),
     select(getMainImageForProcessing),
     select(getMainImageCrop),
   ];
 
-  const mainImage = yield call(
-    getImageArray,
-    mainImageForProcessing.buffer,
-    mainImageForProcessing.width,
-    mainImageForProcessing.height
-  );
-
-  const finalMainImage = yield call(cropAndResizeMainImageToSquare, workers, {
-    mainImage,
+  const mainImage = yield call(getMainImageForPhotomosaic, workers, {
+    mainImage: mainImageForProcessing,
+    tileComparisonDimension: TILE_COMPARISON_SIZE,
+    maxSize: MAIN_IMAGE_MAX_SIZE,
     crop: mainImageCrop,
-    maxWidth: MAIN_IMAGE_MAX_SIZE,
-    maxHeight: MAIN_IMAGE_MAX_SIZE,
   });
 
   const diffs = yield tiles.map(tile => (
     call(
       computePhotomosaicDiff,
       workers,
-      finalMainImage,
+      mainImage,
       tile.buffer
     )
   ));
@@ -281,19 +214,12 @@ function* generatePhotomosaic(workers) {
   const photomosaic = yield call(
     computePhotomosaic,
     workers,
-    finalMainImage,
+    mainImage,
     tiles,
     diffs
   );
 
   yield put(actions.setPhotomosaic(photomosaic));
-}
-
-const createAfterConfirmTiles = (workers) => function* afterConfirmTiles(action) {
-  yield [
-    // call(workers.terminatePool, 'processTile'),
-    call(generatePhotomosaic, workers, action),
-  ];
 };
 
 function* downloadPhotomosaic() {
@@ -305,7 +231,7 @@ export default function* mainSaga(workers) {
   yield* controller({
     [UPLOAD_MAIN_IMAGE]: createProcessMainImage(workers),
     [UPLOAD_TILES]: createProcessTiles(workers),
-    [CONFIRM_TILES]: createAfterConfirmTiles(workers),
+    [CONFIRM_TILES]: createGeneratePhotomosaic(workers),
     [DOWNLOAD_PHOTOMOSAIC]: downloadPhotomosaic,
   });
 }

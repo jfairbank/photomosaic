@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import PageHeader from './PageHeader';
-import UploadFiles from './UploadFiles';
+import PageHeader from 'components/PageHeader';
+import UploadFiles from 'components/UploadFiles';
 
 export default function SelectMainImage({ onUploadMainImage }) {
   return (

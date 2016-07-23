@@ -1,8 +1,11 @@
 import { connect } from 'react-redux';
-import Flow from '../components/Flow';
+import Flow from 'components/Flow';
+import { getFsmState } from 'selectors';
 
-export function mapStateToProps({ fsmState }) {
-  return { fsmState };
+export function mapStateToProps(state) {
+  return {
+    fsmState: getFsmState(state),
+  };
 }
 
 export default connect(

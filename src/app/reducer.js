@@ -1,4 +1,4 @@
-import * as fsm from './fsm';
+import * as fsm from 'fsm';
 
 import {
   ADD_TILES,
@@ -10,7 +10,7 @@ import {
   SET_PHOTOMOSAIC,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
-} from './actionTypes';
+} from 'actionTypes';
 
 const INITIAL_STATE = {
   mainImageForCropping: null,

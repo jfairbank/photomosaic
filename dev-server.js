@@ -13,9 +13,7 @@ webpackConfig.entry.app = [
   webpackConfig.entry.app,
 ];
 
-webpackConfig.plugins = [
-  new webpack.HotModuleReplacementPlugin(),
-];
+webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
 webpackConfig.output.publicPath = `${BASE_URL}/assets`;
 

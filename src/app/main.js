@@ -28,7 +28,7 @@ function render(App) {
   );
 }
 
-if (module.hot) {
+if (__DEV__ && module.hot) {
   module.hot.accept('./containers/PhotomosaicApp', () => {
     const createApp = require('./containers/PhotomosaicApp').default;
     render(createApp(store));

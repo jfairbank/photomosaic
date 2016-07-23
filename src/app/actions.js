@@ -5,7 +5,6 @@ import {
   DOWNLOAD_PHOTOMOSAIC,
   RESTART,
   SELECT_MAIN_IMAGE,
-  SET_FSM_STATE,
   SET_MAIN_IMAGE_CROP,
   SET_PHOTOMOSAIC,
   UPLOAD_MAIN_IMAGE,
@@ -52,11 +51,6 @@ export const setPhotomosaic = (photomosaic) => ({
 
 export const downloadPhotomosaic = () => ({
   type: DOWNLOAD_PHOTOMOSAIC,
-});
-
-export const setFsmState = (fsmState) => ({
-  type: SET_FSM_STATE,
-  payload: fsmState,
 });
 
 export const restart = () => ({

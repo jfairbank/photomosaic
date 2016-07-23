@@ -3,6 +3,7 @@ import ResizeImageWorker from 'worker!../workers/resizeImage';
 import DataURLWorker from 'worker!../workers/dataURL';
 import ProcessTileWorker from 'worker!../workers/processTile';
 import ProcessMainImageWorker from 'worker!../workers/processMainImage';
+import MainImageForPhotomosaicWorker from 'worker!../workers/mainImageForPhotomosaic';
 import ComputePhotomosaicDiffWorker from 'worker!../workers/computePhotomosaicDiff';
 import ComputePhotomosaicWorker from 'worker!../workers/computePhotomosaic';
 
@@ -11,6 +12,7 @@ const WORKERS_CONFIG = {
   dataURL: [DataURLWorker, 4],
   processTile: [ProcessTileWorker, 8],
   processMainImage: [ProcessMainImageWorker, 2],
+  getMainImageForPhotomosaic: [MainImageForPhotomosaicWorker, 1],
   computePhotomosaicDiff: [ComputePhotomosaicDiffWorker, 8],
   computePhotomosaic: [ComputePhotomosaicWorker, 1],
 };

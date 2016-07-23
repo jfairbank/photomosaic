@@ -7,5 +7,4 @@ export const ADD_TILES = 'photomosaic/ADD_TILES';
 export const CONFIRM_TILES = 'photomosaic/CONFIRM_TILES';
 export const SET_PHOTOMOSAIC = 'photomosaic/SET_PHOTOMOSAIC';
 export const DOWNLOAD_PHOTOMOSAIC = 'photomosaic/DOWNLOAD_PHOTOMOSAIC';
-export const SET_FSM_STATE = 'photomosaic/SET_FSM_STATE';
 export const RESTART = 'photomosaic/RESTART';

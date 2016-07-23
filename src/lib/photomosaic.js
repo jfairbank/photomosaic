@@ -1,7 +1,87 @@
 import nj from 'numjs';
 import tileArray from 'ndarray-tile';
 import ops from 'ndarray-ops';
-import { resize, computeDataURL } from '../lib/image';
+import { resize, computeDataURL } from './image';
+import { boundAtSmallerDimension } from './utils';
+
+export function cropMainImageToSquare({
+  buffer,
+  width,
+  height,
+  crop,
+}) {
+  const x = ((crop.x / 100) * width) | 0;
+  const y = ((crop.y / 100) * height) | 0;
+
+  let newWidth = ((crop.width / 100) * width) | 0;
+  let newHeight = ((crop.height / 100) * height) | 0;
+
+  // Make square
+  if (newWidth > newHeight) {
+    newWidth = newHeight;
+  } else if (newHeight > newWidth) {
+    newHeight = newWidth;
+  }
+
+  const croppedArray = nj
+    .uint8(buffer)
+    .reshape(height, width, 4)
+    .slice([y, y + newHeight], [x, x + newWidth])
+    .flatten()
+    .tolist();
+
+  return {
+    buffer: new Uint8Array(croppedArray),
+    width: newWidth,
+    height: newHeight,
+  };
+}
+
+export function cropAndResizeMainImageToSquare({
+  buffer,
+  width,
+  height,
+  tileComparisonDimension,
+  crop,
+  maxSize,
+}) {
+  const croppedMainImage = cropMainImageToSquare({
+    buffer,
+    width,
+    height,
+    crop,
+  });
+
+  const {
+    width: newWidth,
+    height: newHeight,
+  } = boundAtSmallerDimension({
+    width: croppedMainImage.width,
+    height: croppedMainImage.height,
+    maxWidth: maxSize,
+    maxHeight: maxSize,
+  });
+
+  const finalWidth = newWidth - (newWidth % tileComparisonDimension);
+  const finalHeight = newHeight - (newHeight % tileComparisonDimension);
+
+  const resizedBuffer = resize(croppedMainImage.buffer, {
+    width: croppedMainImage.width,
+    height: croppedMainImage.height,
+    newWidth: finalWidth,
+    newHeight: finalHeight,
+  });
+
+  return {
+    buffer: resizedBuffer,
+    width: finalWidth,
+    height: finalHeight,
+  };
+}
+
+export function getMainImageForPhotomosaic(options) {
+  return cropAndResizeMainImageToSquare(options);
+}
 
 export function computeDiff({
   mainImageWidth,
