@@ -3,12 +3,13 @@ import {
   CONFIRM_MAIN_IMAGE_CROP,
   CONFIRM_TILES,
   DOWNLOAD_PHOTOMOSAIC,
+  RESTART,
   SELECT_MAIN_IMAGE,
+  SET_FSM_STATE,
   SET_MAIN_IMAGE_CROP,
   SET_PHOTOMOSAIC,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
-  SET_FSM_STATE,
 } from './actionTypes';
 
 export const uploadMainImage = (file) => ({
@@ -56,4 +57,8 @@ export const downloadPhotomosaic = () => ({
 export const setFsmState = (fsmState) => ({
   type: SET_FSM_STATE,
   payload: fsmState,
+});
+
+export const restart = () => ({
+  type: RESTART,
 });

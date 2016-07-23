@@ -5,6 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "node dev-server.js",
+    "build": "rm -rf ./build && webpack --config webpack.production.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -53,6 +55,7 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
     "brfs": "^1.4.3",
+    "compression-webpack-plugin": "^0.3.1",
     "css-loader": "^0.23.1",
     "eslint": "^3.1.0",
     "eslint-config-airbnb": "^9.0.1",
@@ -61,7 +64,9 @@
     "eslint-plugin-jsx-a11y": "^2.0.1",
     "eslint-plugin-react": "^5.2.2",
     "express": "^4.14.0",
+    "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
+    "html-webpack-plugin": "^2.22.0",
     "json-loader": "^0.5.4",
     "style-loader": "^0.13.1",
     "transform-loader": "^0.2.3",
@@ -84,7 +89,11 @@
         "node_modules",
         "\\.css$"
       ],
-      "import/resolver": "webpack"
+      "import/resolver": {
+        "webpack": {
+          "config": "./webpack.development.config.js"
+        }
+      }
     },
     "rules": {
       "global-require": 0

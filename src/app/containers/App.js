@@ -1,13 +1,15 @@
-import React from 'react';
-import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
+import { getFsmState } from 'selectors';
 import App from 'components/App';
+import * as fsm from 'fsm';
 
-export default function createApp(store) {
-  return function AppContainer() {
-    return (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-  };
+export function mapStateToProps(state) {
+  const fsmState = getFsmState(state);
+  const showProgress = fsmState !== fsm.DONE;
+
+  return { showProgress };
 }
+
+export default connect(
+  mapStateToProps
+)(App);

@@ -17,3 +17,13 @@
 :local .overlayUploading {
   display: block;
 }
+
+:local .tiles {
+  margin: 15px auto 0;
+  text-align: center;
+  width: 810px;
+}
+
+:local .tiles img {
+  margin: 5px;
+}

@@ -1,7 +1,7 @@
 const path = require('path');
 const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.config');
+const webpackConfig = require('./webpack.development.config');
 
 const HOST = '127.0.0.1';
 const PORT = 8080;

@@ -26,7 +26,13 @@ export default function Flow({ fsmState }) {
 
     case fsm.CREATING_PHOTOMOSAIC:
       return (
-        <h3>Generating Photomosaic...</h3>
+        <Processing>
+          Generating Photomosaic...
+          <br />
+          <small>
+            (Please wait as this may take a bit.)
+          </small>
+        </Processing>
       );
 
     default:

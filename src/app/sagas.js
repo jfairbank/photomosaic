@@ -75,6 +75,30 @@ function processMainImageWorker(workers, buffer, maxSize) {
   );
 }
 
+function computeInitialCrop(mainImageForCropping) {
+  const { width, height } = mainImageForCropping;
+
+  const minDimension = Math.min(width, height);
+  const initialWidth = minDimension * 0.75;
+
+  const initialWidthPercentage = ((initialWidth / width) * 100) | 0;
+  const initialHeightPercentage = ((initialWidth / height) * 100) | 0;
+
+  const initialX = (width - initialWidth) / 2;
+  const initialY = (height - initialWidth) / 2;
+
+  const initialXPercentage = ((initialX / width) * 100) | 0;
+  const initialYPercentage = ((initialY / height) * 100) | 0;
+
+  return {
+    x: initialXPercentage,
+    y: initialYPercentage,
+    width: initialWidthPercentage,
+    height: initialHeightPercentage,
+    aspect: 1,
+  };
+}
+
 const createProcessMainImage = (workers) => function* processMainImage(action) {
   const [file] = action.payload;
   const buffer = yield call(readFile, file);
@@ -84,10 +108,14 @@ const createProcessMainImage = (workers) => function* processMainImage(action) {
     processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE),
   ];
 
-  yield call(workers.terminatePool, 'processMainImage');
+  const [mainImageCrop] = yield [
+    call(computeInitialCrop, mainImageForCropping),
+    // call(workers.terminatePool, 'processMainImage'),
+  ];
 
   yield put(actions.selectMainImage({
     mainImageForProcessing,
+    mainImageCrop,
 
     // Don't need the buffer
     mainImageForCropping: {
@@ -263,7 +291,7 @@ function* generatePhotomosaic(workers) {
 
 const createAfterConfirmTiles = (workers) => function* afterConfirmTiles(action) {
   yield [
-    call(workers.terminatePool, 'processTile'),
+    // call(workers.terminatePool, 'processTile'),
     call(generatePhotomosaic, workers, action),
   ];
 };

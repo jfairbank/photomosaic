@@ -4,6 +4,7 @@ import {
   ADD_TILES,
   CONFIRM_MAIN_IMAGE_CROP,
   CONFIRM_TILES,
+  RESTART,
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
   SET_PHOTOMOSAIC,
@@ -29,12 +30,17 @@ export default function reducer(state = INITIAL_STATE, action) {
       };
 
     case SELECT_MAIN_IMAGE: {
-      const { mainImageForProcessing, mainImageForCropping } = action.payload;
+      const {
+        mainImageForProcessing,
+        mainImageForCropping,
+        mainImageCrop,
+      } = action.payload;
 
       return {
         ...state,
         mainImageForProcessing,
         mainImageForCropping,
+        mainImageCrop,
         fsmState: fsm.CROP_MAIN_IMAGE,
       };
     }
@@ -79,6 +85,9 @@ export default function reducer(state = INITIAL_STATE, action) {
         tiles: [],
         fsmState: fsm.DONE,
       };
+
+    case RESTART:
+      return INITIAL_STATE;
 
     default:
       return state;

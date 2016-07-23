@@ -1,0 +1,8 @@
+:local .photomosaic {
+  text-align: center;
+}
+
+:local .restartLink {
+  font-size: 20px;
+  margin-bottom: 15px;
+}

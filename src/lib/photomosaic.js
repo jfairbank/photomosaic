@@ -35,7 +35,8 @@ export function computeDiff({
   );
 
   const tile = new nj.NdArray(selection);
-  const diff = nj.abs(mainImage.subtract(tile));
+  // const diff = nj.abs(mainImage.subtract(tile));
+  const diff = nj.power(mainImage.subtract(tile), 2);
   const diffReduced = nj.zeros([heightScale, widthScale], 'float32');
 
   for (let i = 0; i < mainImageHeight; i += tileComparisonDimension) {
@@ -48,7 +49,8 @@ export function computeDiff({
       diffReduced.set(
         i / tileComparisonDimension,
         j / tileComparisonDimension,
-        sum
+        // sum
+        Math.sqrt(sum)
       );
     }
   }

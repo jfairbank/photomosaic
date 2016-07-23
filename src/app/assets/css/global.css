@@ -9,14 +9,14 @@
 :global .navbar {
   /* margin-bottom: 40px; */
   padding-bottom: 10px;
-  padding-top: 10px;
+  padding-top: 8px;
   text-align: center;
 }
 
 :global .navbar-brand {
   display: block;
   float: none;
-  font-family: Montserrat, Helvetica, Arial, sans-serif;
+  /* font-family: Montserrat, Helvetica, Arial, sans-serif; */
   font-size: 40px;
   font-weight: 100;
   /* font-style: italic; */

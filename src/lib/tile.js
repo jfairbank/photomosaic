@@ -28,19 +28,6 @@ export async function processTile(rawBuffer, tileDimension) {
     maxHeight: tileDimension,
   });
 
-  // let newWidth;
-  // let newHeight;
-  // if (width > height) {
-  //   newHeight = tileDimension;
-  //   newWidth = (newHeight * ratio) | 0;
-  // } else if (height > width) {
-  //   newWidth = tileDimension;
-  //   newHeight = (newWidth / ratio) | 0;
-  // } else {
-  //   newWidth = tileDimension;
-  //   newHeight = tileDimension;
-  // }
-
   const resizedBuffer = resize(buffer, {
     width,
     height,
@@ -48,23 +35,10 @@ export async function processTile(rawBuffer, tileDimension) {
     newHeight,
   });
 
-  // const url = await computeDataURL(resizedBuffer, {
-  //   width: newWidth,
-  //   height: newHeight,
-  // });
-
-  // console.log('tileDimension', tileDimension);
-  // console.log('width', width);
-  // console.log('height', height);
-  // console.log('newWidth', newWidth);
-  // console.log('newHeight', newHeight);
   const {
     dimension,
     buffer: croppedBuffer,
   } = cropSquareFromCenter(resizedBuffer, newWidth, newHeight);
-
-  // console.log('dimension', dimension);
-  // console.log('buffer', croppedBuffer.length);
 
   const url = await computeDataURL(croppedBuffer, {
     width: dimension,
@@ -74,6 +48,5 @@ export async function processTile(rawBuffer, tileDimension) {
   return {
     url,
     buffer: croppedBuffer,
-    // buffer: resizedBuffer,
   };
 }

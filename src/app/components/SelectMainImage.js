@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
-import Page from './Page';
 import PageHeader from './PageHeader';
 import UploadFiles from './UploadFiles';
 
 export default function SelectMainImage({ onUploadMainImage }) {
   return (
-    <Page>
+    <div>
       <PageHeader>
         Create a photomosaic!
         <br />
@@ -17,7 +16,7 @@ export default function SelectMainImage({ onUploadMainImage }) {
         <br />
         Must be a JPEG image.
       </UploadFiles>
-    </Page>
+    </div>
   );
 }
 

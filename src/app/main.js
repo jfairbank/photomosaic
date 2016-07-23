@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { applyMiddleware, createStore, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import defaultCreateApp from 'containers/App';
+import defaultCreateApp from 'containers/PhotomosaicApp';
 import reducer from 'reducer';
 import mainSaga from 'sagas';
 import startWorkers from 'workers';
@@ -32,8 +32,8 @@ function render(App) {
 }
 
 if (module.hot) {
-  module.hot.accept('./containers/App', () => {
-    const createApp = require('./containers/App').default;
+  module.hot.accept('./containers/PhotomosaicApp', () => {
+    const createApp = require('./containers/PhotomosaicApp').default;
     render(createApp(store));
   });
 }

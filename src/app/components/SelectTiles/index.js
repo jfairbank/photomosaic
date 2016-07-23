@@ -23,14 +23,14 @@ export default function SelectTiles({
   return (
     <div className={styles.selectTiles}>
       <PageHeader>
-        Next, upload small tile images to comprise your photomosaic.
+        Now, upload multiple tile images to comprise your photomosaic.
       </PageHeader>
 
       <BigButton
         disabled={!haveTiles}
         onClick={onConfirmTiles}
       >
-        Done Uploading Tiles
+        Create My Photomosaic
       </BigButton>
 
       <UploadFiles onUpload={onUploadTiles} multiple>
@@ -40,17 +40,21 @@ export default function SelectTiles({
           Must be JPEG images.
         </p>
 
-        <p>
-          <small>
-            (Use as many images as possible for the best results.)
-          </small>
-        </p>
+        <small>
+          (Use as many images as possible for the best results.)
+          <br />
+          (If a tile doesn't show up below, there might have been trouble processing it.)
+        </small>
       </UploadFiles>
 
       {haveTiles &&
-        <div>
+        <div className={styles.tiles}>
           {tiles.map((tile, i) => (
-            <Image key={i} src={tile.url} />
+            <Image
+              key={i}
+              src={tile.url}
+              thumbnail
+            />
           ))}
         </div>
       }
