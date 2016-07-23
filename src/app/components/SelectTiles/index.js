@@ -39,13 +39,18 @@ export default function SelectTiles({
           <br />
           Must be JPEG images.
         </p>
-
-        <small>
-          (Use as many images as possible for the best results.)
-          <br />
-          (If a tile doesn't show up below, there might have been trouble processing it.)
-        </small>
       </UploadFiles>
+
+      <div className={styles.note}>
+        <p>
+          Use as many images as possible for the best results.
+        </p>
+
+        <p>
+          If a tile doesn't show up below, there might have been trouble
+          processing it.
+        </p>
+      </div>
 
       {haveTiles &&
         <div className={styles.tiles}>

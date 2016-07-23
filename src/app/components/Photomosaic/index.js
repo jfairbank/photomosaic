@@ -12,7 +12,7 @@ export default function Photomosaic({ url, onDownloadFull, onRestart }) {
       </PageHeader>
 
       <BigButton onClick={onDownloadFull}>
-        Download Full Resolution Photomosaic
+        Download Hi-Res Photomosaic
       </BigButton>
 
       <Button
@@ -23,8 +23,8 @@ export default function Photomosaic({ url, onDownloadFull, onRestart }) {
         Create Another Photomosaic
       </Button>
 
-      <div>
-        <Image src={url} width="600" />
+      <div className={styles.preview}>
+        <Image src={url} />
       </div>
     </div>
   );

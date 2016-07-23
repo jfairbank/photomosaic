@@ -3,8 +3,10 @@
 }
 
 :local .message {
-  /* composes: fontFamily from 'assets/css/global.css'; */
-
-  font-size: 28px;
+  font-size: 2.1rem;
   margin-bottom: 20px;
+}
+
+:local .message small {
+  font-size: 1.4rem;
 }

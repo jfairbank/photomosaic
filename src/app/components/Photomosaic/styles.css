@@ -1,8 +1,25 @@
 :local .photomosaic {
+  margin-bottom: 20px;
   text-align: center;
 }
 
 :local .restartLink {
-  font-size: 20px;
+  font-size: 1.5rem;
   margin-bottom: 15px;
+}
+
+:local .preview img {
+  width: 90%;
+}
+
+@media (min-width: 768px) {
+  :local .preview img {
+    width: 500px;
+  }
+}
+
+@media (min-width: 992px) {
+  :local .preview img {
+    width: 600px;
+  }
 }

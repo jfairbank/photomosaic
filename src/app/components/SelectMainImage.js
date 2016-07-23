@@ -6,9 +6,13 @@ export default function SelectMainImage({ onUploadMainImage }) {
   return (
     <div>
       <PageHeader>
-        Create a photomosaic!
-        <br />
-        First, select your main big image.
+        <p>
+          Create a photomosaic!
+        </p>
+
+        <p>
+          First, select your main big image.
+        </p>
       </PageHeader>
 
       <UploadFiles onUpload={onUploadMainImage} multiple={false}>

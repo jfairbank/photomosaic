@@ -1,6 +1,5 @@
 :local .pageHeader {
-  /* composes: fontFamily from 'assets/css/global.css'; */
-
+  font-size: 2.5rem;
   margin: 0 auto 20px;
   text-align: center;
   width: 75%;

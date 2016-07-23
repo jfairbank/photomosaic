@@ -1,27 +1,21 @@
 :local .uploadFiles {
-  /* composes: fontFamily from 'assets/css/global.css'; */
-
-  border: 2px dashed rgb(102, 102, 102);
   border-radius: 5px;
+  border: 2px dashed rgb(102, 102, 102);
   cursor: default;
   height: 200px;
   margin: 0 auto;
-  padding: 0 40px;
   position: relative;
-  width: 800px;
+  width: 75%;
 }
 
 :local .content {
-  font-size: 24px;
+  font-size: 1.5rem;
   left: 0;
+  padding: 20px;
   position: absolute;
   text-align: center;
   text-transform: uppercase;
   top: 50%;
   transform: translateY(-50%);
   width: 100%;
-}
-
-:local .content small {
-  font-size: 14px;
 }

@@ -1,5 +1,11 @@
 :local .selectTiles {
   position: relative;
+  text-align: center;
+}
+
+:local .note {
+  margin-top: 20px;
+  font-size: 1.25rem;
 }
 
 :local .overlay {
@@ -20,10 +26,21 @@
 
 :local .tiles {
   margin: 15px auto 0;
-  text-align: center;
-  width: 810px;
 }
 
 :local .tiles img {
   margin: 5px;
+  height: 50px;
+  width: 50px;
+}
+
+@media (min-width: 992px) {
+  :local .tiles {
+    width: 85%;
+  }
+
+  :local .tiles img {
+    height: auto;
+    width: auto;
+  }
 }

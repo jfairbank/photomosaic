@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { applyMiddleware, createStore, compose } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import defaultCreateApp from 'containers/PhotomosaicApp';
 import reducer from 'reducer';
@@ -16,10 +16,7 @@ const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(
   reducer,
-  compose(
-    applyMiddleware(sagaMiddleware),
-    window.devToolsExtension ? window.devToolsExtension() : f => f
-  )
+  applyMiddleware(sagaMiddleware)
 );
 
 sagaMiddleware.run(mainSaga, workers);

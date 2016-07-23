@@ -1,61 +1,65 @@
-/* eslint-disable no-param-reassign */
-export function workerUrl(name) {
-  return `/assets/${name}.bundle.js`;
-}
+/* eslint-disable no-param-reassign,import/default */
+import ResizeImageWorker from 'worker!../workers/resizeImage';
+import DataURLWorker from 'worker!../workers/dataURL';
+import ProcessTileWorker from 'worker!../workers/processTile';
+import ProcessMainImageWorker from 'worker!../workers/processMainImage';
+import ComputePhotomosaicDiffWorker from 'worker!../workers/computePhotomosaicDiff';
+import ComputePhotomosaicWorker from 'worker!../workers/computePhotomosaic';
 
-export function createWorker(name) {
-  return new Worker(workerUrl(name));
-}
+const WORKERS_CONFIG = {
+  resizeImage: [ResizeImageWorker, 4],
+  dataURL: [DataURLWorker, 4],
+  processTile: [ProcessTileWorker, 8],
+  processMainImage: [ProcessMainImageWorker, 2],
+  computePhotomosaicDiff: [ComputePhotomosaicDiffWorker, 8],
+  computePhotomosaic: [ComputePhotomosaicWorker, 1],
+};
 
-export function createWorkerPool(name, n) {
+export function createWorkerPool(WorkerType, n) {
   const workers = [];
 
   while (n--) {
-    workers.push(createWorker(name));
+    workers.push(new WorkerType());
   }
 
   return workers;
 }
 
 export default function startWorkers() {
-  const workers = {
-    // decodeImage: createWorkerPool('decodeImage', 4),
-    resizeImage: createWorkerPool('resizeImage', 4),
-    dataURL: createWorkerPool('dataURL', 4),
-    processTile: createWorkerPool('processTile', 8),
-    processMainImage: createWorkerPool('processMainImage', 2),
-    computePhotomosaicDiff: createWorkerPool('computePhotomosaicDiff', 8),
-    computePhotomosaic: createWorkerPool('computePhotomosaic', 1),
-  };
+  const workers = Object.keys(WORKERS_CONFIG).reduce(
+    (memo, key) => ({ ...memo, [key]: null }),
+    {}
+  );
 
-  const pointers = Object.keys(workers).reduce(
+  const pointers = Object.keys(WORKERS_CONFIG).reduce(
     (memo, key) => ({ ...memo, [key]: 0 }),
     {}
   );
 
   const promiseMap = new Map();
 
-  Object.keys(workers).forEach(key => {
-    const workersByType = workers[key];
-
-    workersByType.forEach(worker => {
-      promiseMap.set(worker, Promise.resolve());
-    });
-  });
-
-  function assertWorkers(name) {
-    if (!workers[name]) {
+  function ensureWorkers(name) {
+    if (!WORKERS_CONFIG[name]) {
       throw new Error(`No workers for ${name}.`);
+    }
+
+    if (!workers[name]) {
+      const [WorkerType, numWorkers] = WORKERS_CONFIG[name];
+      const workersByType = workers[name] = createWorkerPool(WorkerType, numWorkers);
+
+      workersByType.forEach(worker => {
+        promiseMap.set(worker, Promise.resolve());
+      });
     }
   }
 
   function getWorkers(name) {
-    assertWorkers(name);
+    ensureWorkers(name);
     return workers[name];
   }
 
   function getWorker(name) {
-    assertWorkers(name);
+    ensureWorkers(name);
 
     const numWorkers = workers[name].length;
     const pointer = pointers[name];
