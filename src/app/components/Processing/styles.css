@@ -1,0 +1,10 @@
+:local .processing {
+  text-align: center;
+}
+
+:local .message {
+  /* composes: fontFamily from 'assets/css/global.css'; */
+
+  font-size: 28px;
+  margin-bottom: 20px;
+}

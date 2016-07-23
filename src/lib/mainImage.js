@@ -1,11 +1,11 @@
-import { boundAtLargerDimension } from './utils';
+import { boundAtSmallerDimension } from './utils';
 import { computeDataURL, decode, resize } from './image';
 
 export async function resizeAndComputeUrl(buffer, width, height, maxSize) {
   const {
     width: newWidth,
     height: newHeight,
-  } = boundAtLargerDimension({
+  } = boundAtSmallerDimension({
     width,
     height,
     maxWidth: maxSize,

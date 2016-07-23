@@ -1,13 +1,19 @@
-.selectTiles {
+:local .selectTiles {
   position: relative;
 }
 
-.overlay {
-  background: rgba(255, 255, 255, 0.8);
+:local .overlay {
+  background: rgba(255, 255, 255, 0.95);
   content: ' ';
+  display: none;
   height: 100%;
   left: 0;
+  padding-top: 100px;
   position: absolute;
   top: 0;
   width: 100%;
+}
+
+:local .overlayUploading {
+  display: block;
 }

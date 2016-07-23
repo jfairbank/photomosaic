@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-import * as fsm from '../fsm';
-import SelectMainImage from '../containers/SelectMainImage';
-import MainImageCropper from '../containers/MainImageCropper';
-import SelectTiles from '../containers/SelectTiles';
-import Photomosaic from '../containers/Photomosaic';
+import * as fsm from 'fsm';
+import Processing from 'components/Processing';
+import SelectMainImage from 'containers/SelectMainImage';
+import MainImageCropper from 'containers/MainImageCropper';
+import SelectTiles from 'containers/SelectTiles';
+import Photomosaic from 'containers/Photomosaic';
 
 export default function Flow({ fsmState }) {
   switch (fsmState) {
@@ -12,7 +13,9 @@ export default function Flow({ fsmState }) {
 
     case fsm.UPLOADING_MAIN_IMAGE:
       return (
-        <h3>Uploading Main Image...</h3>
+        <Processing>
+          Uploading Main Image...
+        </Processing>
       );
 
     case fsm.CROP_MAIN_IMAGE:

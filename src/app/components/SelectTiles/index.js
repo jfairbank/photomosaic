@@ -1,8 +1,11 @@
 import React, { PropTypes } from 'react';
-// import classNames from 'classnames';
-import { ButtonToolbar, Button, Image } from 'react-bootstrap';
-import Dropzone from 'react-dropzone';
-import { ImagePropType } from '../../propTypes';
+import classNames from 'classnames';
+import { Image } from 'react-bootstrap';
+import PageHeader from 'components/PageHeader';
+import BigButton from 'components/BigButton';
+import UploadFiles from 'components/UploadFiles';
+import Processing from 'components/Processing';
+import { ImagePropType } from 'propTypes';
 import styles from './styles.css';
 
 export default function SelectTiles({
@@ -12,17 +15,37 @@ export default function SelectTiles({
   onConfirmTiles,
   onUploadTiles,
 }) {
+  const overlayClassName = classNames(
+    styles.overlay,
+    { [styles.overlayUploading]: uploadingTiles }
+  );
+
   return (
     <div className={styles.selectTiles}>
-      <ButtonToolbar>
-        <Button onClick={onConfirmTiles}>
-          Done
-        </Button>
-      </ButtonToolbar>
+      <PageHeader>
+        Next, upload small tile images to comprise your photomosaic.
+      </PageHeader>
 
-      <Dropzone onDrop={onUploadTiles} multiple>
-        <div>Upload tile images</div>
-      </Dropzone>
+      <BigButton
+        disabled={!haveTiles}
+        onClick={onConfirmTiles}
+      >
+        Done Uploading Tiles
+      </BigButton>
+
+      <UploadFiles onUpload={onUploadTiles} multiple>
+        <p>
+          Drag and drop or click to upload multiple images.
+          <br />
+          Must be JPEG images.
+        </p>
+
+        <p>
+          <small>
+            (Use as many images as possible for the best results.)
+          </small>
+        </p>
+      </UploadFiles>
 
       {haveTiles &&
         <div>
@@ -32,11 +55,15 @@ export default function SelectTiles({
         </div>
       }
 
-      {uploadingTiles &&
-        <div className={styles.overlay}>
+      <div className={overlayClassName}>
+        <Processing>
           Uploading Tiles...
-        </div>
-      }
+          <br />
+          <small>
+            Please wait as this may take a while when uploading multiple images.
+          </small>
+        </Processing>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   SET_PHOTOMOSAIC,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
+  SET_FSM_STATE,
 } from './actionTypes';
 
 export const uploadMainImage = (file) => ({
@@ -50,4 +51,9 @@ export const setPhotomosaic = (photomosaic) => ({
 
 export const downloadPhotomosaic = () => ({
   type: DOWNLOAD_PHOTOMOSAIC,
+});
+
+export const setFsmState = (fsmState) => ({
+  type: SET_FSM_STATE,
+  payload: fsmState,
 });

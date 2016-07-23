@@ -1,0 +1,8 @@
+:local .mainImageCropper {
+  text-align: center;
+}
+
+:local .cropContainer {
+  margin: 0 auto;
+  width: 50%;
+}

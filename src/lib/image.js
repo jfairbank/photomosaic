@@ -1,6 +1,7 @@
 import nj from 'numjs';
 import inkjet from 'inkjet';
-import Resizer from './resizer';
+import pica from 'pica';
+// import Resizer from './resizer';
 import StringView from './stringview';
 
 export function decode(buffer) {
@@ -27,25 +28,45 @@ export function encode(buffer, options) {
   });
 }
 
-export function resize(buffer, {
-  width,
-  height,
-  newWidth,
-  newHeight,
-  channels = 4,
-  interpolationPass = true,
-}) {
-  const resizer = new Resizer(
+export function resize(buffer, { width, height, newWidth, newHeight }) {
+  const options = {
     width,
     height,
-    newWidth,
-    newHeight,
-    channels,
-    interpolationPass
-  );
+    toWidth: newWidth,
+    toHeight: newHeight,
+    src: buffer,
+  };
 
-  return resizer.resize(buffer);
+  let resizedBuffer;
+
+  // This call is actually synchronous, so just set the resizedBuffer with the
+  // callback param.
+  pica.resizeBuffer(options, (_, dest) => {
+    resizedBuffer = dest;
+  });
+
+  return resizedBuffer;
 }
+
+// export function resize(buffer, {
+//   width,
+//   height,
+//   newWidth,
+//   newHeight,
+//   channels = 4,
+//   interpolationPass = true,
+// }) {
+//   const resizer = new Resizer(
+//     width,
+//     height,
+//     newWidth,
+//     newHeight,
+//     channels,
+//     interpolationPass
+//   );
+
+//   return resizer.resize(buffer);
+// }
 
 export function getImageArray(buffer, width, height) {
   return nj.uint8(buffer).reshape(height, width, 4);

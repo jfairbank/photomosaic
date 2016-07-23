@@ -1,12 +1,12 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import Flow from './Flow';
+import App from 'components/App';
 
 export default function createApp(store) {
-  return function App() {
+  return function AppContainer() {
     return (
       <Provider store={store}>
-        <Flow />
+        <App />
       </Provider>
     );
   };

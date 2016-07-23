@@ -87,8 +87,14 @@ const createProcessMainImage = (workers) => function* processMainImage(action) {
   yield call(workers.terminatePool, 'processMainImage');
 
   yield put(actions.selectMainImage({
-    mainImageForCropping,
     mainImageForProcessing,
+
+    // Don't need the buffer
+    mainImageForCropping: {
+      url: mainImageForCropping.url,
+      width: mainImageForCropping.width,
+      height: mainImageForCropping.height,
+    },
   }));
 };
 
@@ -111,6 +117,8 @@ const createProcessTiles = (workers) => function* processTiles(action) {
   const buffers = yield files.map(file => call(readFile, file));
 
   let tiles = yield buffers.map(buffer => call(processTile, workers, buffer));
+
+  // Remove any null's from errors
   tiles = compact(tiles);
 
   yield put(actions.addTiles(tiles));
