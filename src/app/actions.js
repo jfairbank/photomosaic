@@ -1,12 +1,13 @@
 import {
-  UPLOAD_MAIN_IMAGE,
+  ADD_TILES,
+  CONFIRM_MAIN_IMAGE_CROP,
+  CONFIRM_TILES,
+  DOWNLOAD_PHOTOMOSAIC,
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
-  CONFIRM_MAIN_IMAGE_CROP,
-  UPLOAD_TILES,
-  ADD_TILES,
-  CONFIRM_TILES,
   SET_PHOTOMOSAIC,
+  UPLOAD_MAIN_IMAGE,
+  UPLOAD_TILES,
 } from './actionTypes';
 
 export const uploadMainImage = (file) => ({
@@ -45,4 +46,8 @@ export const confirmTiles = () => ({
 export const setPhotomosaic = (photomosaic) => ({
   type: SET_PHOTOMOSAIC,
   payload: photomosaic,
+});
+
+export const downloadPhotomosaic = () => ({
+  type: DOWNLOAD_PHOTOMOSAIC,
 });

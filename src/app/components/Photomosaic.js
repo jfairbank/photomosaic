@@ -1,17 +1,28 @@
 import React, { PropTypes } from 'react';
+import { ButtonToolbar, Button, Image } from 'react-bootstrap';
 
-export default function Photomosaic({ url }) {
+export default function Photomosaic({ url, onDownloadFull }) {
   return (
     <div>
-      <img
-        role="presentation"
-        src={url}
-        width="100%"
-      />
+      <Image src={url} width="500" />
+
+      <br />
+      <br />
+
+      <ButtonToolbar>
+        <Button
+          bsStyle="primary"
+          bsSize="large"
+          onClick={onDownloadFull}
+        >
+          Download Full Resolution Image
+        </Button>
+      </ButtonToolbar>
     </div>
   );
 }
 
 Photomosaic.propTypes = {
   url: PropTypes.string.isRequired,
+  onDownloadFull: PropTypes.func.isRequired,
 };

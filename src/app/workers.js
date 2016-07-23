@@ -22,9 +22,9 @@ export default function startWorkers() {
     // decodeImage: createWorkerPool('decodeImage', 4),
     resizeImage: createWorkerPool('resizeImage', 4),
     dataURL: createWorkerPool('dataURL', 4),
-    processTile: createWorkerPool('processTile', 4),
+    processTile: createWorkerPool('processTile', 8),
     processMainImage: createWorkerPool('processMainImage', 2),
-    computePhotomosaicDiff: createWorkerPool('computePhotomosaicDiff', 4),
+    computePhotomosaicDiff: createWorkerPool('computePhotomosaicDiff', 8),
     computePhotomosaic: createWorkerPool('computePhotomosaic', 1),
   };
 
