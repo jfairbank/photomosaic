@@ -1,8 +1,9 @@
 import { processMainImage } from '../lib/mainImage';
 
 self.onmessage = ({ data }) => {
-  const [maxSize, buffer] = data;
+  const [width, height, maxSize, buffer] = data;
+  const options = { width, height, maxSize };
 
-  processMainImage(buffer, maxSize)
+  processMainImage(buffer, options)
     .then(mainImage => self.postMessage(mainImage));
 };

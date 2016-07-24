@@ -46,12 +46,17 @@ function readFile(file) {
   });
 }
 
-function processMainImageWorker(workers, buffer, maxSize) {
-  return call(
-    workers.runTask,
-    'processMainImage',
-    [maxSize, buffer]
-  );
+function* processMainImageWorker(workers, mainImage, maxSize) {
+  const message = [
+    mainImage.width,
+    mainImage.height,
+    maxSize,
+    mainImage.buffer,
+  ];
+
+  const result = yield call(workers.runTask, 'processMainImage', message);
+
+  return result;
 }
 
 function computeInitialCrop(mainImageForCropping) {
@@ -78,13 +83,35 @@ function computeInitialCrop(mainImageForCropping) {
   };
 }
 
+function* decodeImage(workers, buffer) {
+  const result = yield call(workers.runTask, 'decodeImage', buffer);
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result.data;
+}
+
 const createProcessMainImage = (workers) => function* processMainImage(action) {
   const [file] = action.payload;
   const buffer = yield call(readFile, file);
+  const mainImage = yield call(decodeImage, workers, buffer);
 
   const [mainImageForCropping, mainImageForProcessing] = yield [
-    processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE_CROPPING),
-    processMainImageWorker(workers, buffer, MAIN_IMAGE_MAX_SIZE),
+    call(
+      processMainImageWorker,
+      workers,
+      mainImage,
+      MAIN_IMAGE_MAX_SIZE_CROPPING
+    ),
+
+    call(
+      processMainImageWorker,
+      workers,
+      mainImage,
+      MAIN_IMAGE_MAX_SIZE
+    ),
   ];
 
   const mainImageCrop = yield call(computeInitialCrop, mainImageForCropping);

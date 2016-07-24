@@ -32,17 +32,7 @@ export async function resizeAndComputeUrl(buffer, width, height, maxSize) {
   };
 }
 
-export async function processMainImage(rawBuffer, maxSize) {
-  let width;
-  let height;
-  let buffer;
-
-  try {
-    ({ width, height, data: buffer } = await decode(rawBuffer));
-  } catch (e) {
-    throw new Error('Could not process main image. Please try another.');
-  }
-
+export async function processMainImage(buffer, { width, height, maxSize }) {
   return resizeAndComputeUrl(
     buffer,
     width,

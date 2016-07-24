@@ -6,6 +6,7 @@ import ProcessMainImageWorker from 'worker!../workers/processMainImage';
 import MainImageForPhotomosaicWorker from 'worker!../workers/mainImageForPhotomosaic';
 import ComputePhotomosaicDiffWorker from 'worker!../workers/computePhotomosaicDiff';
 import ComputePhotomosaicWorker from 'worker!../workers/computePhotomosaic';
+import DecodeImageWorker from 'worker!../workers/decodeImage';
 
 const WORKERS_CONFIG = {
   resizeImage: [ResizeImageWorker, 4],
@@ -15,6 +16,7 @@ const WORKERS_CONFIG = {
   getMainImageForPhotomosaic: [MainImageForPhotomosaicWorker, 1],
   computePhotomosaicDiff: [ComputePhotomosaicDiffWorker, 8],
   computePhotomosaic: [ComputePhotomosaicWorker, 1],
+  decodeImage: [DecodeImageWorker, 1],
 };
 
 export function createWorkerPool(WorkerType, n) {

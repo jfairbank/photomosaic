@@ -18,7 +18,7 @@ export default function SelectMainImage({ onUploadMainImage }) {
       <UploadFiles onUpload={onUploadMainImage} multiple={false}>
         Drag and drop or click to upload an image.
         <br />
-        Must be a JPEG image.
+        JPG or PNG images only.
       </UploadFiles>
     </div>
   );

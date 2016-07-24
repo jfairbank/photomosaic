@@ -1,19 +1,71 @@
 import nj from 'numjs';
 import inkjet from 'inkjet';
 import pica from 'pica';
+import PNGReader from 'png.js';
 // import Resizer from './resizer';
 import StringView from './stringview';
 
-export function decode(buffer) {
-  return new Promise((resolve, reject) => {
-    inkjet.decode(buffer, (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
+export function isImageType(header) {
+  const headerLen = header.length;
+
+  return (buffer) => {
+    const view = new Uint8Array(buffer);
+
+    for (let i = 0; i < headerLen; i++) {
+      if (view[i] !== header[i]) {
+        return false;
       }
+    }
+
+    return true;
+  };
+}
+
+export const isJPG = isImageType([0xff, 0xd8, 0xff]);
+export const isPNG = isImageType([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+export function normalizePNGOutput(png) {
+  const width = png.getWidth();
+  const height = png.getHeight();
+  const data = [];
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      data.push(...png.getPixel(x, y));
+    }
+  }
+
+  return { data, width, height };
+}
+
+export function decode(buffer) {
+  if (isJPG(buffer)) {
+    return new Promise((resolve, reject) => {
+      inkjet.decode(buffer, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
+        }
+      });
     });
-  });
+  }
+
+  if (isPNG(buffer)) {
+    return new Promise((resolve, reject) => {
+      const reader = new PNGReader(buffer);
+
+      reader.parse((err, png) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(normalizePNGOutput(png));
+        }
+      });
+    });
+  }
+
+  return Promise.reject(new Error('Unsupported image type.'));
 }
 
 export function encode(buffer, options) {

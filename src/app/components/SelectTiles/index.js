@@ -40,7 +40,7 @@ export default function SelectTiles({
         <p>
           Drag and drop or click to upload multiple images.
           <br />
-          Must be JPEG images.
+          JPG or PNG images only.
         </p>
       </UploadFiles>
 
