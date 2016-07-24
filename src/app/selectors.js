@@ -31,6 +31,26 @@ export function getTiles(state) {
   return state.tiles;
 }
 
+export function getNumTilesUploaded(state) {
+  return state.numTilesUploaded;
+}
+
+export function getNumTilesUploading(state) {
+  return state.numTilesUploading;
+}
+
+export const getPercentTilesUploaded = createSelector(
+  [getNumTilesUploaded, getNumTilesUploading],
+
+  (numTilesUploaded, numTilesUploading) => {
+    if (numTilesUploading === 0) {
+      return 0;
+    }
+
+    return ((numTilesUploaded / numTilesUploading) * 100) | 0;
+  }
+);
+
 export function isUploadingTiles(state) {
   return state.uploadingTiles;
 }

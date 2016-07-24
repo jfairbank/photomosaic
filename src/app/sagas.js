@@ -109,6 +109,8 @@ function* processTile(workers, buffer) {
     [TILE_SIZE, buffer]
   );
 
+  yield put(actions.incrementNumUploadedTiles());
+
   if (response.error) {
     return null;
   }

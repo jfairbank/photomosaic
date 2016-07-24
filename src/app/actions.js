@@ -3,6 +3,7 @@ import {
   CONFIRM_MAIN_IMAGE_CROP,
   CONFIRM_TILES,
   DOWNLOAD_PHOTOMOSAIC,
+  INCREMENT_NUM_UPLOADED_TILES,
   RESTART,
   SELECT_MAIN_IMAGE,
   SET_MAIN_IMAGE_CROP,
@@ -33,6 +34,10 @@ export const confirmMainImageCrop = () => ({
 export const uploadTiles = (tiles) => ({
   type: UPLOAD_TILES,
   payload: tiles,
+});
+
+export const incrementNumUploadedTiles = () => ({
+  type: INCREMENT_NUM_UPLOADED_TILES,
 });
 
 export const addTiles = (tiles) => ({

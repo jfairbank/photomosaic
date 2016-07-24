@@ -10,3 +10,12 @@
 :local .message small {
   font-size: 1.4rem;
 }
+
+:local .progressBar {
+  margin: 0 auto;
+  width: 80%;
+}
+
+:local(.progressBar) .progress-bar {
+  min-width: 5%;
+}

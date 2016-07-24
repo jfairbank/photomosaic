@@ -12,6 +12,9 @@ export default function SelectTiles({
   haveTiles,
   tiles,
   uploadingTiles,
+  numTilesUploaded,
+  numTilesUploading,
+  percentTilesUploaded,
   onConfirmTiles,
   onUploadTiles,
 }) {
@@ -65,8 +68,13 @@ export default function SelectTiles({
       }
 
       <div className={overlayClassName}>
-        <Processing>
+        <Processing
+          progressAmount={percentTilesUploaded}
+          showProgressBar
+        >
           Uploading Tiles...
+          <br />
+          {numTilesUploaded} / {numTilesUploading}
           <br />
           <small>
             Please wait as this may take a while when uploading multiple images.
@@ -81,6 +89,9 @@ SelectTiles.propTypes = {
   haveTiles: PropTypes.bool,
   tiles: PropTypes.arrayOf(ImagePropType),
   uploadingTiles: PropTypes.bool,
+  numTilesUploaded: PropTypes.number,
+  numTilesUploading: PropTypes.number,
+  percentTilesUploaded: PropTypes.number,
   onConfirmTiles: PropTypes.func.isRequired,
   onUploadTiles: PropTypes.func.isRequired,
 };

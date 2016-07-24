@@ -10,12 +10,15 @@ import {
   SET_PHOTOMOSAIC,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
+  INCREMENT_NUM_UPLOADED_TILES,
 } from 'actionTypes';
 
 const INITIAL_STATE = {
   mainImageForCropping: null,
   mainImageCrop: null,
   mainImageForProcessing: null,
+  numTilesUploaded: 0,
+  numTilesUploading: 0,
   tiles: [],
   uploadingTiles: false,
   fsmState: fsm.SELECT_MAIN_IMAGE,
@@ -62,6 +65,14 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         uploadingTiles: true,
+        numTilesUploading: action.payload.length,
+        numTilesUploaded: 0,
+      };
+
+    case INCREMENT_NUM_UPLOADED_TILES:
+      return {
+        ...state,
+        numTilesUploaded: state.numTilesUploaded + 1,
       };
 
     case ADD_TILES:
@@ -82,12 +93,14 @@ export default function reducer(state = INITIAL_STATE, action) {
         ...state,
         photomosaic: action.payload,
         mainImageForProcessing: null,
-        tiles: [],
         fsmState: fsm.DONE,
       };
 
     case RESTART:
-      return INITIAL_STATE;
+      return {
+        ...INITIAL_STATE,
+        tiles: state.tiles,
+      };
 
     default:
       return state;

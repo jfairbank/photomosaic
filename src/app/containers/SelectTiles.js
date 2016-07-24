@@ -1,8 +1,15 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { getTiles, isUploadingTiles } from 'selectors';
 import { uploadTiles, confirmTiles } from 'actions';
 import SelectTiles from 'components/SelectTiles';
+
+import {
+  getTiles,
+  getNumTilesUploaded,
+  getNumTilesUploading,
+  getPercentTilesUploaded,
+  isUploadingTiles,
+} from 'selectors';
 
 export function mapStateToProps(state) {
   const tiles = getTiles(state);
@@ -11,6 +18,9 @@ export function mapStateToProps(state) {
     tiles,
     haveTiles: tiles.length > 0,
     uploadingTiles: isUploadingTiles(state),
+    numTilesUploaded: getNumTilesUploaded(state),
+    numTilesUploading: getNumTilesUploading(state),
+    percentTilesUploaded: getPercentTilesUploaded(state),
   };
 }
 
