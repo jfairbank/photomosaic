@@ -1,0 +1,40 @@
+:local .tile {
+  display: inline-block;
+  position: relative;
+}
+
+:local .tile img {
+  margin: 5px;
+  height: 50px;
+  width: 50px;
+}
+
+:local .deleteIcon {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  :local .tile img {
+    height: auto;
+    width: auto;
+  }
+
+  :local .deleteIcon {
+    cursor: pointer;
+    position: absolute;
+    right: -5px;
+    top: -5px;
+  }
+
+  :local .deleteIcon.deleteIconShow {
+    display: block;
+  }
+
+  :local(.deleteIcon) .fa-circle {
+    color: #d9534f;
+  }
+
+  :local(.deleteIcon) .fa-trash {
+    color: #fff;
+  }
+}

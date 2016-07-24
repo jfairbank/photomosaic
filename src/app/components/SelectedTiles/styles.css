@@ -1,0 +1,20 @@
+:local .selectedTiles {
+  border-top: 1px solid #ccc;
+  margin: 15px auto;
+  padding-top: 10px;
+}
+
+:local .tiles {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+:local .header {
+  font-size: 1.7rem;
+}
+
+@media (min-width: 992px) {
+  :local .selectedTiles {
+    width: 85%;
+  }
+}

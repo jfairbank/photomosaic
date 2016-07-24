@@ -11,3 +11,5 @@ export const DOWNLOAD_PHOTOMOSAIC = 'photomosaic/DOWNLOAD_PHOTOMOSAIC';
 export const SET_TILE_SIZE = 'photomosaic/SET_TILE_SIZE';
 export const RESTART = 'photomosaic/RESTART';
 export const SET_FSM_STATE = 'photomosaic/SET_FSM_STATE';
+export const REMOVE_ICON = 'photomosaic/REMOVE_ICON';
+export const REMOVE_ALL_ICONS = 'photomosaic/REMOVE_ALL_ICONS';

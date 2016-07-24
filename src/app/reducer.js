@@ -6,6 +6,8 @@ import {
   CONFIRM_MAIN_IMAGE_CROP,
   CONFIRM_TILES,
   INCREMENT_NUM_UPLOADED_TILES,
+  REMOVE_ALL_ICONS,
+  REMOVE_ICON,
   RESTART,
   SELECT_MAIN_IMAGE,
   SET_FSM_STATE,
@@ -116,6 +118,21 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         fsmState: action.payload,
+      };
+
+    case REMOVE_ICON: {
+      const id = action.payload;
+
+      return {
+        ...state,
+        tiles: state.tiles.filter((_, i) => i !== id),
+      };
+    }
+
+    case REMOVE_ALL_ICONS:
+      return {
+        ...state,
+        tiles: [],
       };
 
     default:

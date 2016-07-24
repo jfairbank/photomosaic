@@ -12,11 +12,8 @@ import {
 } from 'selectors';
 
 export function mapStateToProps(state) {
-  const tiles = getTiles(state);
-
   return {
-    tiles,
-    haveTiles: tiles.length > 0,
+    haveTiles: getTiles(state).length > 0,
     uploadingTiles: isUploadingTiles(state),
     numTilesUploaded: getNumTilesUploaded(state),
     numTilesUploading: getNumTilesUploading(state),

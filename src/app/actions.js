@@ -4,6 +4,8 @@ import {
   CONFIRM_TILES,
   DOWNLOAD_PHOTOMOSAIC,
   INCREMENT_NUM_UPLOADED_TILES,
+  REMOVE_ALL_ICONS,
+  REMOVE_ICON,
   RESTART,
   SELECT_MAIN_IMAGE,
   SET_FSM_STATE,
@@ -72,4 +74,13 @@ export const restart = () => ({
 export const setFsmState = (fsmState) => ({
   type: SET_FSM_STATE,
   payload: fsmState,
+});
+
+export const removeIcon = (id) => ({
+  type: REMOVE_ICON,
+  payload: id,
+});
+
+export const removeAllIcons = () => ({
+  type: REMOVE_ALL_ICONS,
 });

@@ -23,24 +23,3 @@
 :local .overlayUploading {
   display: block;
 }
-
-:local .tiles {
-  margin: 15px auto 0;
-}
-
-:local .tiles img {
-  margin: 5px;
-  height: 50px;
-  width: 50px;
-}
-
-@media (min-width: 992px) {
-  :local .tiles {
-    width: 85%;
-  }
-
-  :local .tiles img {
-    height: auto;
-    width: auto;
-  }
-}

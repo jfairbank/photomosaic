@@ -1,16 +1,14 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
-import { Image } from 'react-bootstrap';
 import PageHeader from 'components/PageHeader';
 import BigButton from 'components/BigButton';
 import UploadFiles from 'components/UploadFiles';
 import Processing from 'components/Processing';
-import { ImagePropType } from 'propTypes';
+import SelectedTiles from 'containers/SelectedTiles';
 import styles from './styles.css';
 
 export default function SelectTiles({
   haveTiles,
-  tiles,
   uploadingTiles,
   numTilesUploaded,
   numTilesUploading,
@@ -55,17 +53,7 @@ export default function SelectTiles({
         </p>
       </div>
 
-      {haveTiles &&
-        <div className={styles.tiles}>
-          {tiles.map((tile, i) => (
-            <Image
-              key={i}
-              src={tile.url}
-              thumbnail
-            />
-          ))}
-        </div>
-      }
+      <SelectedTiles />
 
       <div className={overlayClassName}>
         <Processing
@@ -87,7 +75,6 @@ export default function SelectTiles({
 
 SelectTiles.propTypes = {
   haveTiles: PropTypes.bool,
-  tiles: PropTypes.arrayOf(ImagePropType),
   uploadingTiles: PropTypes.bool,
   numTilesUploaded: PropTypes.number,
   numTilesUploading: PropTypes.number,
