@@ -22,13 +22,10 @@
   "dependencies": {
     "babel-runtime": "^6.9.2",
     "classnames": "^2.2.5",
-    "cwise": "^1.0.9",
     "downloadjs": "^1.4.4",
     "inkjet": "^2.0.2",
     "lodash": "^4.13.1",
-    "mathjs": "^3.3.0",
     "ndarray": "^1.0.18",
-    "ndarray-awise-prototype": "^1.0.0",
     "ndarray-ops": "^1.2.2",
     "ndarray-tile": "^1.0.3",
     "numjs": "^0.11.4",
@@ -43,8 +40,7 @@
     "react-spinkit": "^1.1.8",
     "redux": "^3.5.2",
     "redux-saga": "^0.11.0",
-    "reselect": "^2.5.3",
-    "rx-dom": "^7.0.3"
+    "reselect": "^2.5.3"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.7",
@@ -101,7 +97,10 @@
     },
     "rules": {
       "global-require": 0,
-      "quote-props": [2, "consistent-as-needed"]
+      "quote-props": [
+        2,
+        "consistent-as-needed"
+      ]
     },
     "globals": {
       "__DEV__": false

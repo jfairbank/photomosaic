@@ -2,7 +2,6 @@ import nj from 'numjs';
 import inkjet from 'inkjet';
 import pica from 'pica';
 import PNGReader from 'png.js';
-// import Resizer from './resizer';
 import StringView from './stringview';
 
 export function isImageType(header) {
