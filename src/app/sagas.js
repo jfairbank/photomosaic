@@ -4,26 +4,29 @@ import { takeEvery } from 'redux-saga';
 import { call, put, select } from 'redux-saga/effects';
 import download from 'downloadjs';
 import * as actions from 'actions';
+import * as fsm from 'fsm';
 
 import {
-  getMainImageForProcessing,
+  getFsmState,
   getMainImageCrop,
-  getTiles,
+  getMainImageForProcessing,
+  getMaxTileSize,
   getPhotomosaic,
+  getTileSize,
+  getTiles,
 } from './selectors';
 
 import {
-  TILE_COMPARISON_SIZE,
-  TILE_SIZE,
-  MAIN_IMAGE_MAX_SIZE_CROPPING,
   MAIN_IMAGE_MAX_SIZE,
+  MAIN_IMAGE_MAX_SIZE_CROPPING,
 } from './config';
 
 import {
-  UPLOAD_MAIN_IMAGE,
-  UPLOAD_TILES,
   CONFIRM_TILES,
   DOWNLOAD_PHOTOMOSAIC,
+  SET_TILE_SIZE,
+  UPLOAD_MAIN_IMAGE,
+  UPLOAD_TILES,
 } from './actionTypes';
 
 function controller(map) {
@@ -130,10 +133,12 @@ const createProcessMainImage = (workers) => function* processMainImage(action) {
 };
 
 function* processTile(workers, buffer) {
+  const maxTileSize = yield select(getMaxTileSize);
+
   const response = yield call(
     workers.runTask,
     'processTile',
-    [TILE_SIZE, buffer]
+    [maxTileSize, buffer]
   );
 
   yield put(actions.incrementNumUploadedTiles());
@@ -157,33 +162,43 @@ const createProcessTiles = (workers) => function* processTiles(action) {
   yield put(actions.addTiles(tiles));
 };
 
-function* computePhotomosaicDiff(workers, mainImage, tileBuffer) {
+function* computePhotomosaicDiff(workers, mainImage, maxTileSize, tileSize, tileBuffer) {
   const message = [
     mainImage.width,
     mainImage.height,
-    TILE_COMPARISON_SIZE,
-    TILE_SIZE,
+    maxTileSize,
+    tileSize.comparisonSize,
+    tileSize.size,
     mainImage.buffer,
     tileBuffer,
   ];
 
-  const diff = yield call(
+  const result = yield call(
     workers.runTask,
     'computePhotomosaicDiff',
     message
   );
 
-  return diff;
+  return result;
 }
 
-function* computePhotomosaic(workers, mainImage, tiles, diffs) {
+function* computePhotomosaic(workers, mainImage, tileSize, buffers) {
+  const [diffBuffers, tileBuffers] = buffers.reduce(
+    (memo, buffer) => {
+      memo[0].push(buffer.diffBuffer);
+      memo[1].push(buffer.tileBuffer);
+      return memo;
+    },
+    [[], []]
+  );
+
   const message = [
     mainImage.width,
     mainImage.height,
-    TILE_COMPARISON_SIZE,
-    TILE_SIZE,
-    tiles.map(tile => tile.buffer),
-    diffs,
+    tileSize.comparisonSize,
+    tileSize.size,
+    tileBuffers,
+    diffBuffers,
   ];
 
   const photomosaic = yield call(
@@ -218,24 +233,34 @@ function* getMainImageForPhotomosaic(
 }
 
 const createGeneratePhotomosaic = (workers) => function* generatePhotomosaic() {
-  const [tiles, mainImageForProcessing, mainImageCrop] = yield [
+  const [
+    tiles,
+    mainImageForProcessing,
+    mainImageCrop,
+    tileSize,
+    maxTileSize,
+  ] = yield [
     select(getTiles),
     select(getMainImageForProcessing),
     select(getMainImageCrop),
+    select(getTileSize),
+    select(getMaxTileSize),
   ];
 
   const mainImage = yield call(getMainImageForPhotomosaic, workers, {
     mainImage: mainImageForProcessing,
-    tileComparisonDimension: TILE_COMPARISON_SIZE,
+    tileComparisonDimension: tileSize.comparisonSize,
     maxSize: MAIN_IMAGE_MAX_SIZE,
     crop: mainImageCrop,
   });
 
-  const diffs = yield tiles.map(tile => (
+  const buffers = yield tiles.map(tile => (
     call(
       computePhotomosaicDiff,
       workers,
       mainImage,
+      maxTileSize,
+      tileSize,
       tile.buffer
     )
   ));
@@ -244,8 +269,8 @@ const createGeneratePhotomosaic = (workers) => function* generatePhotomosaic() {
     computePhotomosaic,
     workers,
     mainImage,
-    tiles,
-    diffs
+    tileSize,
+    buffers
   );
 
   yield put(actions.setPhotomosaic(photomosaic));
@@ -256,11 +281,28 @@ function* downloadPhotomosaic() {
   yield call(download, fullUrl, 'photomosaic.jpg', 'image/jpeg');
 }
 
+function* recomputePhotomosaic(workers) {
+  yield [
+    put(actions.setFsmState(fsm.CREATING_PHOTOMOSAIC)),
+    call(createGeneratePhotomosaic(workers)),
+  ];
+}
+
+const createCheckRecomputePhotomosaic = (workers) =>
+  function* checkRecomputePhotomosaic() {
+    const fsmState = yield select(getFsmState);
+
+    if (fsmState === fsm.DONE) {
+      yield call(recomputePhotomosaic, workers);
+    }
+  };
+
 export default function* mainSaga(workers) {
   yield* controller({
     [UPLOAD_MAIN_IMAGE]: createProcessMainImage(workers),
     [UPLOAD_TILES]: createProcessTiles(workers),
     [CONFIRM_TILES]: createGeneratePhotomosaic(workers),
     [DOWNLOAD_PHOTOMOSAIC]: downloadPhotomosaic,
+    [SET_TILE_SIZE]: createCheckRecomputePhotomosaic(workers),
   });
 }

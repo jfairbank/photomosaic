@@ -86,8 +86,9 @@ export function getMainImageForPhotomosaic(options) {
 export function computeDiff({
   mainImageWidth,
   mainImageHeight,
-  tileComparisonDimension,
   tileDimension,
+  tileComparisonDimension,
+  tileOutputDimension,
   mainImageBuffer,
   tileBuffer,
 }) {
@@ -97,6 +98,19 @@ export function computeDiff({
     newWidth: tileComparisonDimension,
     newHeight: tileComparisonDimension,
   });
+
+  let outputTileBuffer;
+
+  if (tileOutputDimension === tileDimension) {
+    outputTileBuffer = tileBuffer;
+  } else {
+    outputTileBuffer = resize(tileBuffer, {
+      width: tileDimension,
+      height: tileDimension,
+      newWidth: tileOutputDimension,
+      newHeight: tileOutputDimension,
+    });
+  }
 
   const heightScale = (mainImageHeight / tileComparisonDimension) | 0;
   const widthScale = (mainImageWidth / tileComparisonDimension) | 0;
@@ -135,7 +149,10 @@ export function computeDiff({
     }
   }
 
-  return diffReduced.selection.data;
+  return {
+    tileBuffer: outputTileBuffer,
+    diffBuffer: diffReduced.selection.data,
+  };
 }
 
 export async function computePhotomosaic({

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { TILE_SIZES } from 'config';
 import * as fsm from 'fsm';
 
 const PROGRESS_AMOUNT_MAP = {
@@ -62,4 +63,13 @@ export const getMainImageCrop = createSelector(
 
 export function getPhotomosaic(state) {
   return state.photomosaic;
+}
+
+export const getTileSize = createSelector(
+  state => state.tileSize,
+  key => TILE_SIZES[key],
+);
+
+export function getMaxTileSize(state) {
+  return state.maxTileSize;
 }

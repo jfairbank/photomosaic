@@ -1,16 +1,19 @@
 import * as fsm from 'fsm';
+import { TILE_SIZES } from 'config';
 
 import {
   ADD_TILES,
   CONFIRM_MAIN_IMAGE_CROP,
   CONFIRM_TILES,
+  INCREMENT_NUM_UPLOADED_TILES,
   RESTART,
   SELECT_MAIN_IMAGE,
+  SET_FSM_STATE,
   SET_MAIN_IMAGE_CROP,
   SET_PHOTOMOSAIC,
+  SET_TILE_SIZE,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
-  INCREMENT_NUM_UPLOADED_TILES,
 } from 'actionTypes';
 
 const INITIAL_STATE = {
@@ -20,6 +23,8 @@ const INITIAL_STATE = {
   numTilesUploaded: 0,
   numTilesUploading: 0,
   tiles: [],
+  maxTileSize: TILE_SIZES.large.size,
+  tileSize: 'medium',
   uploadingTiles: false,
   fsmState: fsm.SELECT_MAIN_IMAGE,
 };
@@ -92,14 +97,25 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         photomosaic: action.payload,
-        mainImageForProcessing: null,
         fsmState: fsm.DONE,
+      };
+
+    case SET_TILE_SIZE:
+      return {
+        ...state,
+        tileSize: action.payload,
       };
 
     case RESTART:
       return {
         ...INITIAL_STATE,
         tiles: state.tiles,
+      };
+
+    case SET_FSM_STATE:
+      return {
+        ...state,
+        fsmState: action.payload,
       };
 
     default:

@@ -5,11 +5,23 @@
 
 :local .restartLink {
   font-size: 1.5rem;
-  margin-bottom: 15px;
+  margin-top: 10px;
 }
 
 :local .preview img {
   width: 90%;
+}
+
+:local .changeTileSize {
+  margin-bottom: 20px;
+}
+
+:local .changeTileSize button:disabled,
+:local .changeTileSize button:disabled:hover {
+  background: #337ab7;
+  cursor: default;
+  color: #fff;
+  opacity: 1;
 }
 
 @media (min-width: 768px) {

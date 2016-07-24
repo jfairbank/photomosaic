@@ -4,8 +4,9 @@ self.onmessage = ({ data }) => {
   const [
     mainImageWidth,
     mainImageHeight,
-    tileComparisonDimension,
     tileDimension,
+    tileComparisonDimension,
+    tileOutputDimension,
     mainImageBuffer,
     tileBuffer,
   ] = data;
@@ -13,8 +14,9 @@ self.onmessage = ({ data }) => {
   const diff = computeDiff({
     mainImageWidth,
     mainImageHeight,
-    tileComparisonDimension,
     tileDimension,
+    tileComparisonDimension,
+    tileOutputDimension,
     mainImageBuffer,
     tileBuffer,
   });

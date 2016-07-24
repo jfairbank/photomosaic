@@ -6,8 +6,10 @@ import {
   INCREMENT_NUM_UPLOADED_TILES,
   RESTART,
   SELECT_MAIN_IMAGE,
+  SET_FSM_STATE,
   SET_MAIN_IMAGE_CROP,
   SET_PHOTOMOSAIC,
+  SET_TILE_SIZE,
   UPLOAD_MAIN_IMAGE,
   UPLOAD_TILES,
 } from './actionTypes';
@@ -58,6 +60,16 @@ export const downloadPhotomosaic = () => ({
   type: DOWNLOAD_PHOTOMOSAIC,
 });
 
+export const setTileSize = (key) => ({
+  type: SET_TILE_SIZE,
+  payload: key,
+});
+
 export const restart = () => ({
   type: RESTART,
+});
+
+export const setFsmState = (fsmState) => ({
+  type: SET_FSM_STATE,
+  payload: fsmState,
 });
