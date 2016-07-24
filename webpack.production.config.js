@@ -5,8 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
-  devtool: '#source-map',
-
   entry: {
     app: './src/app/main.js',
   },
