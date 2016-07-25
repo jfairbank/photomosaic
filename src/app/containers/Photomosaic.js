@@ -15,6 +15,7 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     onDownloadFull: downloadPhotomosaic,
     onRestart: restart,
+    onSetXsmallTileSize: () => setTileSize('xsmall'),
     onSetSmallTileSize: () => setTileSize('small'),
     onSetMediumTileSize: () => setTileSize('medium'),
     onSetLargeTileSize: () => setTileSize('large'),

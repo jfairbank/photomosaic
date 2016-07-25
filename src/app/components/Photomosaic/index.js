@@ -14,6 +14,7 @@ export default function Photomosaic({
   tileSize,
   onDownloadFull,
   onRestart,
+  onSetXsmallTileSize,
   onSetSmallTileSize,
   onSetMediumTileSize,
   onSetLargeTileSize,
@@ -32,6 +33,13 @@ export default function Photomosaic({
         <h3>Change Tile Size</h3>
 
         <ButtonGroup bsSize="large">
+          <Button
+            disabled={tileSize === 'xsmall'}
+            onClick={onSetXsmallTileSize}
+          >
+            XSmall
+          </Button>
+
           <Button
             disabled={tileSize === 'small'}
             onClick={onSetSmallTileSize}
@@ -75,6 +83,7 @@ Photomosaic.propTypes = {
   tileSize: PropTypes.string.isRequired,
   onDownloadFull: PropTypes.func.isRequired,
   onRestart: PropTypes.func.isRequired,
+  onSetXsmallTileSize: PropTypes.func.isRequired,
   onSetSmallTileSize: PropTypes.func.isRequired,
   onSetMediumTileSize: PropTypes.func.isRequired,
   onSetLargeTileSize: PropTypes.func.isRequired,
