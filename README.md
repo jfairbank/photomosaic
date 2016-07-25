@@ -28,4 +28,6 @@ scheduling.
 
 ## Sample Output
 
-[![Recycle](sample_output/recycle.jpg)](sample_output/recycle.jpg)
+<a href="https://raw.githubusercontent.com/jfairbank/photomosaic/master/sample_output/recycle.jpg">
+  <img src="https://raw.githubusercontent.com/jfairbank/photomosaic/master/sample_output/recycle.jpg" width="500" alt="Recycle">
+</a>
