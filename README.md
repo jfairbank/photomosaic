@@ -25,3 +25,7 @@ working with multidimensional arrays:
 
 All heavy computations are performed by pools of Web Workers with Round-robin
 scheduling.
+
+## Sample Output
+
+[![Recycle](sample_output/recycle.jpg)](sample_output/recycle.jpg)
