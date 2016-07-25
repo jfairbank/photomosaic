@@ -76,7 +76,6 @@ export default function Progress({
 }
 
 Progress.propTypes = {
-  amount: PropTypes.number.isRequired,
   fsmState: PropTypes.number.isRequired,
   showOverlay: PropTypes.bool.isRequired,
   canSelectMainImage: PropTypes.bool.isRequired,
