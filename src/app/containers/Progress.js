@@ -14,9 +14,17 @@ import {
 } from 'selectors';
 
 export function mapStateToProps(state) {
+  const fsmState = getFsmState(state);
+
+  const showOverlay = (
+    isUploadingTiles(state) ||
+    fsmState === fsm.UPLOADING_MAIN_IMAGE ||
+    fsmState === fsm.CREATING_PHOTOMOSAIC
+  );
+
   return {
-    fsmState: getFsmState(state),
-    uploadingTiles: isUploadingTiles(state),
+    fsmState,
+    showOverlay,
     canSelectMainImage: canSelectMainImage(state),
     canCropMainImage: canCropMainImage(state),
     canSelectTiles: canSelectTiles(state),

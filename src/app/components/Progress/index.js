@@ -12,7 +12,7 @@ function activeNavButtonClass(currentFsmState, fsmState) {
 
 export default function Progress({
   fsmState,
-  uploadingTiles,
+  showOverlay,
   canSelectMainImage,
   canCropMainImage,
   canSelectTiles,
@@ -22,15 +22,6 @@ export default function Progress({
   onSelectTiles,
   onViewPhotomosaic,
 }) {
-  const overlayClassName = classNames(
-    styles.overlay,
-    {
-      [styles.overlayShow]: (
-        uploadingTiles || fsmState === fsm.CREATING_PHOTOMOSAIC
-      ),
-    }
-  );
-
   return (
     <div className={styles.progress}>
       <ButtonGroup
@@ -74,7 +65,12 @@ export default function Progress({
         </Button>
       </ButtonGroup>
 
-      <div className={overlayClassName} />
+      <div
+        className={classNames(
+          styles.overlay,
+          { [styles.overlayShow]: showOverlay }
+        )}
+      />
     </div>
   );
 }
@@ -82,7 +78,7 @@ export default function Progress({
 Progress.propTypes = {
   amount: PropTypes.number.isRequired,
   fsmState: PropTypes.number.isRequired,
-  uploadingTiles: PropTypes.bool.isRequired,
+  showOverlay: PropTypes.bool.isRequired,
   canSelectMainImage: PropTypes.bool.isRequired,
   canCropMainImage: PropTypes.bool.isRequired,
   canSelectTiles: PropTypes.bool.isRequired,
