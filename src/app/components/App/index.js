@@ -1,16 +1,12 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import Progress from 'containers/Progress';
 import Flow from 'containers/Flow';
 
-export default function App({ showProgress }) {
+export default function App() {
   return (
     <div>
-      {showProgress && <Progress />}
+      <Progress />
       <Flow />
     </div>
   );
 }
-
-App.propTypes = {
-  showProgress: PropTypes.bool.isRequired,
-};

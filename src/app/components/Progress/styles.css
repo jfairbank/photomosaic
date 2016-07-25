@@ -1,0 +1,30 @@
+:local .progress {
+  position: relative;
+}
+
+:local .nav {
+  margin: 5px 0 15px;
+}
+
+:local .activeNavButton,
+:local .activeNavButton:hover,
+:local .activeNavButton:active,
+:local .activeNavButton:focus {
+  background: #337ab7 !important;
+  color: #fff !important;
+}
+
+:local .overlay {
+  background: rgba(255, 255, 255, 0.95);
+  content: ' ';
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+:local .overlayShow {
+  display: block;
+}

@@ -15,7 +15,3 @@
   margin: 0 auto;
   width: 80%;
 }
-
-:local(.progressBar) .progress-bar {
-  min-width: 5%;
-}

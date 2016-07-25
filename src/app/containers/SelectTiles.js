@@ -1,7 +1,12 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { uploadTiles, confirmTiles } from 'actions';
 import SelectTiles from 'components/SelectTiles';
+
+import {
+  uploadTiles,
+  confirmTiles,
+  changeMainImageCrop,
+} from 'actions';
 
 import {
   getTiles,
@@ -25,6 +30,7 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     onUploadTiles: uploadTiles,
     onConfirmTiles: confirmTiles,
+    onChangeMainImageCrop: changeMainImageCrop,
   }, dispatch);
 }
 

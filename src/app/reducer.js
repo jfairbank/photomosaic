@@ -64,7 +64,6 @@ export default function reducer(state = INITIAL_STATE, action) {
     case CONFIRM_MAIN_IMAGE_CROP:
       return {
         ...state,
-        mainImageForCropping: null,
         fsmState: fsm.SELECT_TILES,
       };
 

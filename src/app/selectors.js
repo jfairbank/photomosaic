@@ -73,3 +73,26 @@ export const getTileSize = createSelector(
 export function getMaxTileSize(state) {
   return state.maxTileSize;
 }
+
+export function canSelectMainImage() {
+  return true;
+}
+
+export const canCropMainImage = createSelector(
+  getMainImageForCropping,
+  a => !!a
+);
+
+export const canSelectTiles = createSelector(
+  getMainImageForCropping,
+  getMainImageForProcessing,
+  getMainImageCrop,
+  (a, b, c) => !!(a && b && c)
+);
+
+export const canViewPhotomosaic = createSelector(
+  canSelectTiles,
+  getTiles,
+  getPhotomosaic,
+  (a, tiles, b) => !!(a && tiles.length > 0 && b)
+);
