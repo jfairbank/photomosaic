@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node ./dev-server.js",
     "build": "mkdir -p ./build && rm ./build/* && cp CNAME ./build && webpack --config webpack.production.config.js",
+    "deploy": "surge -p ./build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -68,6 +69,7 @@
     "postcss": "^5.1.0",
     "postcss-loader": "^0.9.1",
     "style-loader": "^0.13.1",
+    "surge": "^0.18.0",
     "transform-loader": "^0.2.3",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.1",
